@@ -13,6 +13,7 @@ function openDB() {
         db = event.target.result;
         console.log('Database opened successfully');
         fetchAndStorePatients();
+        populatePatientSelect(); // Call the function to populate the select dropdown
     };
 
     request.onerror = function(event) {
@@ -147,6 +148,75 @@ function addStudent() {
     // Reset form after submission
     document.getElementById('studentForm').reset();
     return false; // Prevent default form submission
+}
+
+function loadPatientData() {
+    const patientId = document.getElementById('patientSelect').value;
+    const transaction = db.transaction(["patients"], "readonly");
+    const store = transaction.objectStore("patients");
+    const request = store.get(parseInt(patientId));
+
+    request.onsuccess = function(event) {
+        const patient = event.target.result;
+        if (patient) {
+            document.getElementById('first_name').value = patient.First;  // Updated property name
+            document.getElementById('last_name').value = patient.Last;    // Updated property name
+            document.getElementById('email').value = patient.Email;       // Correct property name
+            document.getElementById('gender').value = patient.Gender;     // Correct property name
+            document.getElementById('address').value = patient.Address;   // Correct property name
+            document.getElementById('telephone').value = patient.Telephone; // Correct property name
+        }
+    };
+}
+
+
+// Function to populate the patient select dropdown
+function populatePatientSelect() {
+    const patientSelect = document.getElementById('patientSelect');
+    const transaction = db.transaction(['patients'], 'readonly');
+    const objectStore = transaction.objectStore('patients');
+
+    const request = objectStore.getAll(); // Get all patients
+
+    request.onsuccess = function(event) {
+        const patients = event.target.result;
+        patients.forEach(patient => {
+            const option = document.createElement('option');
+            option.value = patient.id; // Use patient id as the value
+            option.textContent = `${patient.First} ${patient.Last}`; // Display full name
+            patientSelect.appendChild(option); // Add option to the select element
+        });
+    };
+
+    request.onerror = function(event) {
+        console.error('Error loading patients:', event.target.error);
+    };
+}
+
+function editPatient() {
+    const patientId = document.getElementById('patientSelect').value;
+    const updatedPatient = {
+        id: parseInt(patientId),
+        first_name: document.getElementById('first_name').value,
+        last_name: document.getElementById('last_name').value,
+        email: document.getElementById('email').value,
+        gender: document.getElementById('gender').value,
+        address: document.getElementById('address').value,
+        telephone: document.getElementById('telephone').value
+    };
+
+    const transaction = db.transaction(["patients"], "readwrite");
+    const store = transaction.objectStore("patients");
+    const request = store.put(updatedPatient);
+
+    request.onsuccess = function() {
+        alert("Patient updated successfully!");
+        location.reload(); // Reload the page to see the updated data
+    };
+
+    request.onerror = function() {
+        alert("Error updating patient.");
+    };
 }
 
 
