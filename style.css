@@ -97,7 +97,7 @@ h1 img {fill: #7c69d1;}
 #menu ul li a span, #menu h1 img, .toggleMenu span {
     margin-right: 4px;
 }
-ul {list-style: none; padding-inline-start: 0px;}
+header ul {list-style: none; padding-inline-start: 0px;}
 a {text-decoration: none;}
 
 /* Much smaller devices */
