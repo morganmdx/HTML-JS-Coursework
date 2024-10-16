@@ -61,6 +61,32 @@ body {
     top: 10px;
 }
 
+form label:before {
+    content: "";
+    height: 10px;
+    display: block;
+    clear: both;
+}
+
+form button {
+    background: #7c69d1;
+    color: #ffffff;
+    font-weight: 600;
+    display: block;
+    padding: 11px;
+    border: none;
+    box-shadow: none;
+    margin-top: 19px;
+}
+
+form input, form select {
+    background: cornsilk;
+    border: none;
+    border-bottom: 2px solid #7c69d1;
+    padding: 12px;
+    margin-left: 5px;
+}
+
 a, h1, #menu li, footer h3 {color: #7c69d1;}
 h1 img {fill: #7c69d1;}
 
@@ -77,6 +103,13 @@ h1 img {fill: #7c69d1;}
 
 #menu ul ul {
     margin-left: 20px;
+}
+
+.page-content {
+    padding: 19px 24px;
+}
+.page_container {
+    height: auto !important;
 }
 
 .main-section-container {
@@ -160,6 +193,12 @@ article section .box .number {
     right: 8px;
     top: 21px;
     font-size: 11px;
+}
+
+.fullwidth {
+    width: calc(100% - 24px);
+    clear: both;
+    display: block;
 }
 
 .forty {
