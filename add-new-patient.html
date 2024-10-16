@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <script src="menu.js" defer></script> <!-- Ensure script is loaded after the page is parsed -->
+    <script src="database.js"></script>
 </head>
 <body>
     <header id="menu">
@@ -60,59 +61,52 @@
     </header>
 
     <article id="main">
-        <div class="main-section-container">
+        <div class="main-section-container page_container">
             
-            <section class="section forty">
-                <div class="box-container">
-                    <h4>Overview</h4>
-                    <div class="box purple">
-                        <div class="box-header">
-                            <span class="material-symbols-outlined sec-icon">personal_injury</span>
-                            <span class="box-header-label">Patients</span>
-                        </div>
-                        <span class="number">180</span>
-                    </div>
-
-                    <div class="box green">
-                        <div class="box-header">
-                            <span class="material-symbols-outlined sec-icon">stethoscope_check</span>
-                            <span class="box-header-label">Doctors</span>
-                        </div>
-                        <span class="number">11</span>
-                    </div>
-
-                    <div class="box lime">
-                        <div class="box-header">
-                            <span class="material-symbols-outlined sec-icon">pill</span>
-                            <span class="box-header-label">Treatments</span>
-                        </div>
-                        <span class="number">04</span>
-                    </div>
-
-                    <div class="box amber">
-                        <div class="box-header">
-                            <span class="material-symbols-outlined sec-icon">clinical_notes</span>
-                            <span class="box-header-label">Consultations</span>
-                        </div>
-                        <span class="pending-label">Pending</span>
-                        <span class="number">04</span>
-                    </div>
-                </div>
-            </section>
-
-            <section class="section forty">
-                <div class="box-container">
-                    <h4>Introduction</h4>
-                    <div>
-                        <p>Hello <span class="wave">👋</span>, welcome to MediOps - web based patient services management portal made by 2nd year Middlesex University cyber security and digital forensics student, Morgan McLellan.</p>
-                        <p>Using this system, you can:
-                            <ul>
-                                <li>View patient records using Patient Search</li>
-                                <li>Update patient records with any treatments</li>
-                                <li>Manage and respond to appointment requests</li>
-                            </ul>
-                        </p>
-                    </div>
+            <section class="section fullwidth">
+                <div class="page-content">
+                    <h2>Add New Patient</h2>
+                    <!-- On form submission call the addStudent() function -->
+                    <form id="patientForm" onsubmit="return addPatient();">
+                        <label for="nhs">NHS Number:</label>
+                        <input type="text" id="nhs" required>
+                    
+                        <label for="title">Title:</label>
+                        <select id="title" required>
+                            <option value="Mr">Mr</option>
+                            <option value="Mrs">Mrs</option>
+                            <option value="Ms">Ms</option>
+                            <option value="Dr">Dr</option>
+                        </select>
+                    
+                        <label for="first">First Name:</label>
+                        <input type="text" id="first" required>
+                    
+                        <label for="last">Last Name:</label>
+                        <input type="text" id="last" required>
+                    
+                        <label for="dob">Date of Birth:</label>
+                        <input type="date" id="dob" required>
+                    
+                        <label for="gender">Gender:</label>
+                        <select id="gender" required>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    
+                        <label for="address">Address:</label>
+                        <input type="text" id="address" required>
+                    
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" required>
+                    
+                        <label for="telephone">Telephone:</label>
+                        <input type="tel" id="telephone" pattern="^\+[1-9]\d{1,14}$" placeholder="+1234567890" required>
+                    
+                        <br/>
+                        <button type="submit">Add Patient</button>
+                    </form>
+                    
                 </div>
             </section>
 
