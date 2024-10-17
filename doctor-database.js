@@ -2,16 +2,16 @@
 let db;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Open (or create) the database
+    // Execute or create the database with a version of 1
     let request = window.indexedDB.open('doctorsDB', 1);
 
     request.onerror = function(event) {
-        console.error('Database failed to open', event);
+        console.error('Database failed to open', event);  // if db failed to open add the following error msg to the console
     };
 
     request.onsuccess = function(event) {
         db = event.target.result;
-        console.log('Database opened successfully');
+        console.log('Database opened successfully');  // if db opens successfully print the following msg to the console
 
         // Check if the doctors object store already has entries
         let transaction = db.transaction(['doctors'], 'readonly');
@@ -39,13 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
             let objectStore = db.createObjectStore('doctors', { keyPath: 'id', autoIncrement: true });
             objectStore.createIndex('first_name', 'first_name', { unique: false });
             objectStore.createIndex('last_name', 'last_name', { unique: false });
-            console.log('Database setup complete');
+            console.log('Database setup complete');  // if db is set up then print the following to the console
         }
     };
 });
 
-// Function to fetch and populate the database
-function populateDatabase() {
+// Function to fetch and populate data to the database
+function populateDatabase() {  // first of all fetch the following external db JSON url
     fetch('https://jsethi-mdx.github.io/cst2572.github.io/doctors.json')
         .then(response => response.json())
         .then(data => {
@@ -53,7 +53,7 @@ function populateDatabase() {
             let objectStore = transaction.objectStore('doctors');
             
             data.forEach(doctor => {
-                objectStore.add(doctor);
+                objectStore.add(doctor);  // for each doctor in the JSON array
             });
 
             transaction.oncomplete = function() {
@@ -64,11 +64,13 @@ function populateDatabase() {
                 console.error('Transaction failed', event);
             };
         })
-        .catch(error => console.error('Error fetching doctors:', error));
+        .catch(error => console.error('Error fetching doctors:', error));  // if data is not available then add the following msg to the console
 }
 
-// Function to search doctors based on first or last name
+// Function to allow user to search doctors based on their first/last name
 function searchDoctors() {
+
+    //create variables
     let searchValue = document.getElementById('search').value.toLowerCase();
     let transaction = db.transaction(['doctors'], 'readonly');
     let objectStore = transaction.objectStore('doctors');
@@ -77,9 +79,9 @@ function searchDoctors() {
     request.onsuccess = function(event) {
         let doctors = event.target.result;
         let results = doctors.filter(doctor => 
-            doctor.first_name.toLowerCase().includes(searchValue) || 
+            doctor.first_name.toLowerCase().includes(searchValue) ||  
             doctor.last_name.toLowerCase().includes(searchValue)
-        );
+        );  // convert doctor names to lowercase using toLowerCase() function to avoid case sensitive search
 
         displayResults(results);
     };
@@ -94,12 +96,13 @@ function searchDoctors() {
 // Function to display search results
 function displayResults(results) {
     let resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = ''; // Clear previous results
+    resultsDiv.innerHTML = ''; // Clear previous results output by targeting innerHTML
 
-    if (results.length > 0) {
+    if (results.length > 0) {  // if more than 0 results then run the following
         let html = '<h2>Search Results:</h2>';
         html += '<ul>';
 
+        // format the search results for each doctor
         results.forEach(doctor => {
             html += `<li>
                 <strong>ID:</strong> ${doctor.id} <br/>
@@ -112,23 +115,22 @@ function displayResults(results) {
             </li>`;
         });
 
-        html += '</ul>';
+        html += '</ul>';  // end of unordered list
         resultsDiv.innerHTML = html;
-    } else {
+    } else {  // if search results is not more than 1 then print the following message saying none found
         resultsDiv.innerHTML = '<p>No doctors found.</p>';
     }
 }
 
 // Function to add a new doctor
 function addDoctor() {
-    // Ensure db is open before adding
-    if (!db) {
-        console.error('Database is not initialized');
+    if (!db) {  // check if there is an existing db connection
+        console.error('Database has not been started or created.');
         return;
     }
 
     const doctorData = {
-        first_name: document.getElementById('first_name').value,
+        first_name: document.getElementById('first_name').value,  // value of HTML element with the ID of first_name and store it as a new variable called first_name
         last_name: document.getElementById('last_name').value,
         email: document.getElementById('email').value,
         gender: document.getElementById('gender').value,
@@ -142,14 +144,14 @@ function addDoctor() {
     const request = objectStore.add(doctorData);
 
     request.onsuccess = function() {
-        console.log("New Doctor Data added to DB:", doctorData);
-        alert("Doctor added successfully!");
+        console.log("New Doctor Data added to DB:", doctorData);  // print doctor info to console log
+        alert("Doctor added successfully!");  // if doctor has been added then show the following dialog to user
     };
 
     request.onerror = function(event) {
         console.error("Error adding doctor:", event.target.error);
         alert("Failed to add doctor. Please check the console for details.");
-    };
+    }; 
 
     // Reset the form after submission
     document.getElementById('doctorForm').reset();
@@ -175,7 +177,8 @@ function loadDoctors() {
         // Clear existing options
         doctorSelect.innerHTML = '';
 
-        if (doctors.length > 0) {
+        if (doctors.length > 0) {  // if there is at least one doctor in the array then run following code
+            // For each doctor in the array create option in the <select> dropdown with dr first name & last name
             doctors.forEach(doctor => {
                 const option = document.createElement('option');
                 option.value = doctor.id;

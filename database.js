@@ -11,9 +11,9 @@ function openDB() {
 
     request.onsuccess = function(event) {
         db = event.target.result;
-        console.log('Database opened successfully');
-        fetchAndStorePatients();
-        populatePatientSelect(); // Call the function to populate the select dropdown
+        console.log('Database opened successfully');  // if db has been successfully created print this msg to the console
+        fetchAndStorePatients();  // call the function to get and store patient data
+        populatePatientSelect(); // call the function to populate the select dropdown for patient list
     };
 
     request.onerror = function(event) {
@@ -46,7 +46,7 @@ function addPatient() {
 
         // Create a new patient object with all form data and auto-incremented id
         let newPatient = {
-            id: nextId,  // Auto-assign the next available id
+            id: nextId,  // assign the next available id
             NHS: nhs,
             Title: title,
             First: first,
@@ -77,8 +77,8 @@ function addPatient() {
 }
 
 
-// Fetch JSON data from URL and store it in IndexedDB
-function fetchAndStorePatients() {
+// Fetch patients data from the JSON URL and store it in IndexedDB
+function fetchAndStorePatients() {  
     fetch('https://jsethi-mdx.github.io/cst2572.github.io/patients.json')
         .then(response => response.json())
         .then(data => {
@@ -90,7 +90,7 @@ function fetchAndStorePatients() {
                 let objectStore = transaction.objectStore('patients');
                 
                 batch.forEach(patient => {
-                    objectStore.add(patient);
+                    objectStore.add(patient);  // add patient to object store
                 });
 
                 transaction.oncomplete = function() {
@@ -106,10 +106,9 @@ function fetchAndStorePatients() {
 }
 
 
-// Function to add a new patient via the form
-// Function to add a new patient via the form
-function addStudent() {
-    let name = document.getElementById('name').value;
+// Create function to add a new patient via the form
+function addStudent() {  
+    let name = document.getElementById('name').value;  
     let age = document.getElementById('age').value;
     let address = document.getElementById('address').value;
 
@@ -138,11 +137,11 @@ function addStudent() {
     objectStore.add(newPatient);
 
     transaction.oncomplete = function() {
-        console.log('New patient added successfully');
+        console.log('New patient added successfully');  // print to console the following success message on completion
     };
 
     transaction.onerror = function(event) {
-        console.error('Error adding new patient:', event.target.error);
+        console.error('Error adding new patient:', event.target.error);  // print to console the following error msg
     };
 
     // Reset form after submission
@@ -154,17 +153,17 @@ function loadPatientData() {
     const patientId = document.getElementById('patientSelect').value;
     const transaction = db.transaction(["patients"], "readonly");
     const store = transaction.objectStore("patients");
-    const request = store.get(parseInt(patientId));
+    const request = store.get(parseInt(patientId));  // change patient ID into integer
 
     request.onsuccess = function(event) {
         const patient = event.target.result;
         if (patient) {
-            document.getElementById('first_name').value = patient.First;  // Updated property name
-            document.getElementById('last_name').value = patient.Last;    // Updated property name
-            document.getElementById('email').value = patient.Email;       // Correct property name
-            document.getElementById('gender').value = patient.Gender;     // Correct property name
-            document.getElementById('address').value = patient.Address;   // Correct property name
-            document.getElementById('telephone').value = patient.Telephone; // Correct property name
+            document.getElementById('first_name').value = patient.First;  // Update value of first name element with value of patient first name
+            document.getElementById('last_name').value = patient.Last;    // Update value of surname element with value of patient last name
+            document.getElementById('email').value = patient.Email;       // Update value of email element with value of patient email address
+            document.getElementById('gender').value = patient.Gender;     // Update value of gender form element with value of patient gender
+            document.getElementById('address').value = patient.Address;   // Update value of address element with value of address field
+            document.getElementById('telephone').value = patient.Telephone; // Update value of telephone element with value of patient phone number
         }
     };
 }
@@ -220,7 +219,7 @@ function editPatient() {
 }
 
 
-// Initialize the database on page load
+// Start the database when the page loads
 window.onload = function() {
-    openDB();
+    openDB();  // execute database
 };
