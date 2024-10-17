@@ -92,8 +92,8 @@ function displayResults(results) {
     let resultsDiv = document.getElementById('results');
     resultsDiv.innerHTML = ''; // Clear previous results
 
-    if (results.length > 0) {
-        let html = '<h2>Search Results:</h2>';
+    if (results.length > 0) {  // if there is more than one result in search results array
+        let html = '<h2>Search Results:</h2>';  // display word search results inside a h2 heading tag
         html += '<ul>';
 
         results.forEach(doctor => {
