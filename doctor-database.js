@@ -185,7 +185,7 @@ function loadDoctors() {
                 option.textContent = `${doctor.first_name} ${doctor.last_name}`;
                 doctorSelect.appendChild(option);
             });
-        } else {
+        } else {  // if no drs found then print the following to the console log
             console.log("No doctors found in IndexedDB.");
         }
     };
@@ -201,7 +201,7 @@ function loadDoctorData() {
     if (doctorId) {
         const transaction = db.transaction(['doctors'], 'readonly');
         const objectStore = transaction.objectStore('doctors');
-        const request = objectStore.get(parseInt(doctorId));
+        const request = objectStore.get(parseInt(doctorId)); // convert DR id to integer
 
         request.onsuccess = function(event) {
             const doctor = event.target.result;
@@ -217,7 +217,7 @@ function loadDoctorData() {
     }
 }
 
-// Edit doctor function
+// Function to allow user to edit doctor
 function editDoctor() {
     const doctorId = document.getElementById('doctorSelect').value;
 
@@ -244,7 +244,7 @@ function editDoctor() {
         alert("Failed to update doctor. Please check the console for details.");
     };
 
-    return false; // Prevent the form from submitting the traditional way
+    return false; // Prevent the form from submitting the default way
 }
 
 // Load doctors when the page is loaded
