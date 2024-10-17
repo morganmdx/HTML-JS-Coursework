@@ -1,8 +1,8 @@
 let db;
 
-// Open or create an IndexedDB
+// Open or create an IndexedDB with the name PatientsDB
 function openDB() {
-    let request = indexedDB.open('PatientsDB', 1);
+    let request = indexedDB.open('PatientsDB', 1); 
 
     request.onupgradeneeded = function(event) {
         db = event.target.result;
@@ -82,7 +82,7 @@ function fetchAndStorePatients() {
     fetch('https://jsethi-mdx.github.io/cst2572.github.io/patients.json')
         .then(response => response.json())
         .then(data => {
-            let batchSize = 20; // Handle data in chunks of 20 records at a time
+            let batchSize = 20; // Handle data in batches of 20 records at a time to avoid possible data loss
             let totalBatches = Math.ceil(data.length / batchSize);
             for (let i = 0; i < totalBatches; i++) {
                 let batch = data.slice(i * batchSize, (i + 1) * batchSize);
@@ -209,7 +209,7 @@ function editPatient() {
     const request = store.put(updatedPatient);
 
     request.onsuccess = function() {
-        alert("Patient updated successfully!");
+        alert("Patient updated successfully!");  // using alert() function to display notification popup with prompt user must dismiss
         location.reload(); // Reload the page to see the updated data
     };
 

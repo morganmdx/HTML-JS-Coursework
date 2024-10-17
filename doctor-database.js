@@ -160,7 +160,7 @@ function addDoctor() {
 
 // Load doctors into the select dropdown
 function loadDoctors() {
-    // Check if db is defined
+    // Check if db is stated
     if (!db) {
         console.error("Database is not initialized.");
         return;
@@ -191,7 +191,7 @@ function loadDoctors() {
     };
 
     request.onerror = function(event) {
-        console.error("Error retrieving doctors:", event.target.error);
+        console.error("Error getting any doctors:", event.target.error);
     };
 }
 

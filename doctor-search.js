@@ -96,6 +96,7 @@ function displayResults(results) {
         let html = '<h2>Search Results:</h2>';  // display word search results inside a h2 heading tag
         html += '<ul>';
 
+        // for each doctor in the search results array then return the following based on OOP
         results.forEach(doctor => {
             html += `<li>
                 <strong>ID:</strong> ${doctor.id} <br/>
