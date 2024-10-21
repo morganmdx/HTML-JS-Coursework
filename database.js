@@ -6,20 +6,30 @@ function openDB() {
 
     request.onupgradeneeded = function(event) {
         db = event.target.result;
-        let objectStore = db.createObjectStore('patients', { keyPath: 'id', autoIncrement: true });
+
+        // Create patients object store if it doesn't exist
+        if (!db.objectStoreNames.contains('patients')) {
+            let objectStore = db.createObjectStore('patients', { keyPath: 'id', autoIncrement: true });
+        }
+
+        // Create userLogins object store for patient login details
+        if (!db.objectStoreNames.contains('userLogins')) {
+            let loginStore = db.createObjectStore('userLogins', { keyPath: 'id' }); 
+        }
     };
 
     request.onsuccess = function(event) {
         db = event.target.result;
-        console.log('Database opened successfully');  // if db has been successfully created print this msg to the console
-        fetchAndStorePatients();  // call the function to get and store patient data
-        populatePatientSelect(); // call the function to populate the select dropdown for patient list
+        console.log('Database opened successfully'); // if db successfully executes and opens then prints this to console log
+        fetchAndStorePatients();  // call and run function
+        populatePatientSelect();  // call and run function to populate data in select dropdown
     };
 
     request.onerror = function(event) {
         console.error('Database error:', event.target.errorCode);
     };
 }
+
 
 // Function to add a new patient via the form
 function addPatient() {
@@ -82,28 +92,44 @@ function fetchAndStorePatients() {
     fetch('https://jsethi-mdx.github.io/cst2572.github.io/patients.json')
         .then(response => response.json())
         .then(data => {
-            let batchSize = 20; // Handle data in batches of 20 records at a time to avoid possible data loss
+            let batchSize = 20; // Handle data in small parts
             let totalBatches = Math.ceil(data.length / batchSize);
+
             for (let i = 0; i < totalBatches; i++) {
                 let batch = data.slice(i * batchSize, (i + 1) * batchSize);
                 let transaction = db.transaction(['patients'], 'readwrite');
                 let objectStore = transaction.objectStore('patients');
-                
+
                 batch.forEach(patient => {
-                    objectStore.add(patient);  // add patient to object store
+                    // Check if the patient already exists by using their 'id'
+                    let checkRequest = objectStore.get(patient.id);
+
+                    checkRequest.onsuccess = function(event) {
+                        if (!event.target.result) {
+                            // If patient does not exist, add it to the object store
+                            objectStore.add(patient);
+                        } else {
+                            console.log(`Patient with id ${patient.id} already exists.`);
+                        }
+                    };
+
+                    checkRequest.onerror = function(event) {
+                        console.error('Error checking patient:', event.target.error);
+                    };
                 });
 
                 transaction.oncomplete = function() {
-                    console.log(`Batch ${i + 1} of ${totalBatches} added successfully.`);
+                    console.log(`Batch ${i + 1} of ${totalBatches} processed successfully.`);
                 };
 
                 transaction.onerror = function(event) {
-                    console.error('Error adding batch:', event.target.error);
+                    console.error('Error processing batch:', event.target.error);
                 };
             }
         })
         .catch(error => console.error('Fetch error:', error));
 }
+
 
 
 // Create function to add a new patient via the form
@@ -191,6 +217,59 @@ function populatePatientSelect() {
         console.error('Error loading patients:', event.target.error);
     };
 }
+
+function createPatientLoginDetails() {
+    // Get the selected patient ID, username, and password from the form
+    let patientId = document.getElementById('patientSelect').value; 
+    let username = document.getElementById('username').value;
+    let password = document.getElementById('password').value;
+
+    // Begin a transaction on both the patients and userLogins object stores
+    let transaction = db.transaction(['patients', 'userLogins'], 'readwrite');
+    let patientStore = transaction.objectStore('patients');
+    let loginStore = transaction.objectStore('userLogins');
+
+    // Retrieve the patient based on the selected ID
+    let request = patientStore.get(parseInt(patientId));
+
+    request.onsuccess = function(event) {
+        let patient = event.target.result;
+        if (patient) {
+            // If the patient exists, create a login record
+            // The following are key value pairs and is OOP
+            let loginDetails = {
+                id: patient.id,  // Reuse the patient's ID as the key
+                username: username,
+                password: password,
+                NHS: patient.nhs  // link NHS number with patient account
+            };
+
+            // Attempt to add the login details to the userLogins store
+            let loginRequest = loginStore.add(loginDetails);
+
+            loginRequest.onsuccess = function() {
+                alert("Account details created successfully for patient! The NHS number has been successfully linked to the user account.");
+            };
+
+            loginRequest.onerror = function(event) {
+                console.error("Error creating user login details: ", event.target.error);
+                alert("Error creating user login details.");
+            };
+
+        } else {
+            alert("Selected patient does not exist.");
+        }
+    };
+
+    request.onerror = function(event) {
+        console.error("Error fetching patient: ", event.target.error);
+    };
+
+    // Reset the form after submission
+    document.getElementById("patientLoginForm").reset(); 
+    return false;  // Prevent default form submission
+}
+
 
 function editPatient() {
     const patientId = document.getElementById('patientSelect').value;
