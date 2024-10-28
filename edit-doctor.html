@@ -57,6 +57,20 @@
                     <li> <a href="edit-doctor.html" title="Edit Doctor">Edit Doctor</a> </li> <!-- Link to the new page -->
                 </ul>
             </li>
+
+            <li>
+                <div class="toggleMenu">
+                    <span class="material-symbols-outlined">support_agent</span>
+                    Admin <i>Coming Soon</i>
+                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                </div>
+                <ul class="submenu">
+                    <li> <a href="add-new-patient.html" title="Add New Patient">Add New Patient</a> </li>
+                    <li> <a href="assign-doctor-role.html" title="Assign Doctor User Role">Assign Doctor User Role</a> </li>
+                    <li> <a href="create-login-doctor.html" title="Create Login Details for Doctor">Create Login Details for Doctor</a> </li>
+                    <li> <a href="create-login-patient.html" title="Create Login Details for Patient">Create Login Details for Patient</a> </li> <!-- Link to the new page -->
+                </ul>
+            </li>
         </ul>
     </header>
 
@@ -76,7 +90,8 @@
                         <input type="text" id="gender" placeholder="Gender" required>
                         <input type="text" id="address" placeholder="Address" required>
                         <input type="text" id="telephone" placeholder="Telephone" required>
-                        <button type="submit">Update Doctor</button>
+                        <button class="DeleteButton" type="submit">Update Doctor</button>
+                        <button class="DeleteButton" type="button" id="deleteButton" onclick="deleteDoctor()">Delete Doctor</button>
                     </form>
                 </div>
             </section>
