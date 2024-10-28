@@ -297,6 +297,30 @@ function editPatient() {
     };
 }
 
+// Delete patient from DB
+function deletePatient() {
+    const patientId = document.getElementById('patientSelect').value;
+
+    // Confirm before deletion
+    if (confirm("Are you sure you want to delete this patient?")) {
+        // Start a transaction on the 'patients' object store
+        const transaction = db.transaction(['patients'], 'readwrite');
+        const objectStore = transaction.objectStore('patients');
+
+        // Delete patient on ID selected in dropdown
+        const deleteRequest = objectStore.delete(parseInt(patientId)); // Convert patient ID to integer
+
+        deleteRequest.onsuccess = function() {
+            alert("Patient deleted successfully!");
+            location.reload(); // Reload the page to reflect changes
+        };
+
+        deleteRequest.onerror = function(event) {
+            console.error("Error deleting patient:", event.target.error);
+            alert("Error deleting patient.");
+        };
+    }
+}
 
 // Start the database when the page loads
 window.onload = function() {
