@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediOps - Create Patient Login</title>
+    <link href="style.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <script src="menu.js" defer></script> <!-- Ensure script is loaded after the page is parsed -->
+    <script src="database.js"></script>
+</head>
+<body>
+    <header id="menu">
+        <h1> 
+            <img alt="MediOps logo" width="20" src="images/logo.svg"> Medi<strong>Ops</strong> 
+        </h1>
+
+        <ul>
+            <li>
+                <a href="admin.html" title="Navigate to Home">
+                    <span class="material-symbols-outlined">layers</span> Dashboard
+                </a>
+            </li>
+            <li>
+                <div class="toggleMenu">
+                    <span class="material-symbols-outlined">group</span>
+                    Patients
+                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                </div>
+                <ul class="submenu">
+                    <li> <a href="add-new-patient.html" title="Add New Patient">Add New Patient</a> </li>
+                    <li> <a href="patients.html" title="View List of Patients">All Patients</a> </li>
+                </ul>
+            </li>
+            <li>
+                <div class="toggleMenu">
+                    <span class="material-symbols-outlined">today</span>
+                    Appointments
+                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                </div>
+                <ul class="submenu">
+                    <li> <a href="patient-history.html" title="View Patient History">View Patient History</a> </li>
+                    <li> <a href="medicines.html" title="View Medicines">Medicine Reporting</a> </li>
+                </ul>
+            </li>
+            <li>
+                <div class="toggleMenu">
+                    <span class="material-symbols-outlined">stethoscope</span>
+                    Staff
+                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                </div>
+                <ul class="submenu">
+                    <li> <a href="add-new-doctor.html" title="Add New Doctor">Add New Doctor</a> </li>
+                    <li> <a href="doctors.html" title="View List of Doctors">All Doctors</a> </li>
+                    <li> <a href="edit-doctor.html" title="Edit Doctor">Edit Doctor</a> </li> <!-- Link to the new page -->
+                </ul>
+            </li>
+
+            <li>
+                <div class="toggleMenu">
+                    <span class="material-symbols-outlined">support_agent</span>
+                    Admin <i>Coming Soon</i>
+                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                </div>
+                <ul class="submenu">
+                    <li> <a href="add-new-patient.html" title="Add New Patient">Add New Patient</a> </li>
+                    <li> <a href="assign-doctor-role.html" title="Assign Doctor User Role">Assign Doctor User Role</a> </li>
+                    <li> <a href="create-login-doctor.html" title="Create Login Details for Doctor">Create Login Details for Doctor</a> </li>
+                    <li> <a href="create-login-patient.html" title="Create Login Details for Patient">Create Login Details for Patient</a> </li> <!-- Link to the new page -->
+                </ul>
+            </li>
+        </ul>
+    </header>
+
+    <article id="main">
+        <div class="main-section-container page_container">
+            
+            <section class="section fullwidth">
+                <div class="page-content">
+                    <h2>Create Patient Login Details</h2>
+                    <!-- On form submission call the createPatientLoginDetails() function -->
+                    <form id="patientLoginForm" onsubmit="return createPatientLoginDetails();">
+                        <label for="patientSelect">Select Patient:</label>
+                        <select id="patientSelect" required> <!-- this data is dynamically filled in via JS -->
+                        </select>
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" required>
+                    
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" required autocomplete="current-password">
+                    
+                        <br/>
+                        <button type="submit">Create Account</button>
+                    </form>
+                    
+                </div>
+            </section>
+
+        </div>
+        <footer>
+            <div class="footer-container">
+                <h3><img alt="MedAdmin logo" width="20" src="images/logo.svg"> Medi<strong>Ops</strong> </h3>
+                <p>Copyright &copy; 2024 MediOps - Medical Admin Management System</p>
+            </div>
+        </footer>
+        <br/>
+    </article>
+</body>
+</html>
