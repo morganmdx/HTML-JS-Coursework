@@ -15,6 +15,15 @@ body {
     padding: 9px;
 }
 
+.DeleteButton {
+    float: left;
+    margin-right: 8px;
+}
+.divider {
+    display: block;
+    clear: both;
+}
+
 #menu {
     display: block;
     padding: 12px 20px;
@@ -35,6 +44,12 @@ body {
     margin: 6px 0px;
     font-weight: 400;
 }
+
+.toggleMenu i {
+    font-size: 9px;
+    margin-left: 4px;
+}
+
 #menu h1 {
     padding: 0px 11px;
 }
