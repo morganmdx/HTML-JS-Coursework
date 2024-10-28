@@ -247,5 +247,33 @@ function editDoctor() {
     return false; // Prevent the form from submitting the default way
 }
 
+
+// Delete doctor from DB
+function deletePatient() {
+    const doctorId = document.getElementById('doctorSelect').value;
+
+    // Confirm before deletion
+    if (confirm("Are you sure you want to delete this doctor?")) {
+        // Start a transaction on the 'patients' object store
+        const transaction = db.transaction(['doctors'], 'readwrite');
+        const objectStore = transaction.objectStore('doctors');
+
+        // Delete patient on ID selected in dropdown
+        const deleteRequest = objectStore.delete(parseInt(doctorId)); // Convert patient ID to integer
+
+        deleteRequest.onsuccess = function() {
+            alert("Doctor deleted successfully!");
+            location.reload(); // Reload the page to reflect changes
+        };
+
+        deleteRequest.onerror = function(event) {
+            console.error("Error deleting doctor:", event.target.error);
+            alert("Error deleting doctor.");
+        };
+    }
+}
+
+
+
 // Load doctors when the page is loaded
 document.addEventListener('DOMContentLoaded', loadDoctors);
