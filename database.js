@@ -6,7 +6,7 @@ function openDB() {
 
     request.onupgradeneeded = function(event) {
         db = event.target.result;
-
+ 
         // Create patients object store if it doesn't exist
         if (!db.objectStoreNames.contains('patients')) {
             let objectStore = db.createObjectStore('patients', { keyPath: 'id', autoIncrement: true });
@@ -233,15 +233,14 @@ function createPatientLoginDetails() {
     let request = patientStore.get(parseInt(patientId));
 
     request.onsuccess = function(event) {
-        let patient = event.target.result;
+        let patient = event.target.result; // Get the patient object
         if (patient) {
-            // If the patient exists, create a login record
-            // The following are key value pairs and is OOP
+            // Create a login record
             let loginDetails = {
                 id: patient.id,  // Reuse the patient's ID as the key
                 username: username,
                 password: password,
-                NHS: patient.nhs  // link NHS number with patient account
+                NHS: patient.NHS  // Correctly access the NHS_number property
             };
 
             // Attempt to add the login details to the userLogins store
@@ -269,6 +268,7 @@ function createPatientLoginDetails() {
     document.getElementById("patientLoginForm").reset(); 
     return false;  // Prevent default form submission
 }
+
 
 
 function editPatient() {
