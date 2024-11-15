@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Open IndexedDB and create an object store for medicines
     let db;
-    const request = indexedDB.open('MedicinesDB', 1);
+    const request = indexedDB.open('MedicinesDB', 1);  // open/make connection to MedicinesDB
 
     request.onupgradeneeded = function (event) {
         db = event.target.result;

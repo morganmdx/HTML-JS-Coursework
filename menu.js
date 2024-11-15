@@ -9,6 +9,15 @@ function logout() {
     window.location.href = "doctor-login.html";
 }
 
+function toggleNav() {
+    var navToggle = document.getElementById("header_navigation");
+    if (navToggle.style.display === "block") {
+      navToggle.style.display = "none";
+    } else {
+      navToggle.style.display = "block";
+    }
+  }
+
 // Check if the user is logged in and show menu parts
 if (localStorage.getItem("isAdminLoggedIn") || localStorage.getItem("isPatientLoggedIn") || localStorage.getItem("isDoctorLoggedIn")) {
     const adminOnly = document.getElementsByClassName("showloggedin");
