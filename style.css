@@ -14,6 +14,25 @@ body {
     .main-section-container {min-height: 306px; height: 306px;}
 }
 
+@media screen and (max-width: 900px) {
+    .nav-toggle {
+        display: block !important;
+    }
+    #header_navigation {
+        display: none;
+    }
+    article#main, header#menu {
+        position: relative !important;
+    }
+    header#menu {
+        width: calc(100% - 40px);
+    }
+    article#main {
+        left: 0px !important;
+        width: calc(100% - 10px) !important;
+    }
+}
+
 /* Tables */
 table, #medicines-list {
     width: 100%;
@@ -211,6 +230,15 @@ h1 img {
 }
 
 /* Navigation and Menus */
+.nav-toggle {
+    position: absolute;
+    display: none;
+    right: 20px;
+    top: 18px;
+}
+.nav-toggle span {
+    font-size: 2.5em;
+}
 #menu {
     display: block;
     padding: 12px 20px;
