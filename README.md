@@ -34,6 +34,9 @@ This web application features a slick user interface that is mobile-friendly acr
 - Live Server (Visual Code Studio free Extension) by Ritwick Dey
 - Internet access may be needed where CDN or external resources used
 
+## Publication
+This project was published on GitHub on 16th October 2024 via (https://github.com/morganmdx/HTML-JS-Coursework)
+
 ## Contributing
 This was for a Second Year university coursework project.
 Contributions are welcome! If you have suggestions or improvements, feel free to open an issue or submit a pull request.
