@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediOps - Patient List</title>
+    <title>MediOps - Create Patient Login</title>
     <link href="style.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,9 +14,9 @@
 
     <script>
         // Check if the user is logged in
-        if (!localStorage.getItem("isDoctorLoggedIn") && !localStorage.getItem("isAdminLoggedIn")) {
+        if (!localStorage.getItem("isAdminLoggedIn")) {
             // Redirect to the login page if not logged in
-            window.location.href = "doctor-login.html";
+            window.location.href = "admin-login.html";
         }
     </script>
 </head>
@@ -113,19 +113,30 @@
             
             <section class="section fullwidth">
                 <div class="page-content">
-                    <h2>Search for a Patient</h2>
-                    <!-- Search form -->
-                    <form id="searchForm" onsubmit="return searchPatients();">
+                    <h2>Create Patient Login Details</h2>
+                    <!-- On form submission call the createPatientLoginDetails() function -->
+                    <form id="patientLoginForm" onsubmit="return createPatientLoginDetails();">
+                        
                         <fieldset>
-                            <label for="search">Search by First or Last Name:</label>
-                            <input type="text" id="search" required>
+                            <label for="patientSelect">Select Patient:</label>
+                            <select id="patientSelect" required> <!-- this data is dynamically filled in via JS -->
+                            </select>
                         </fieldset>
+
                         <fieldset>
-                            <button type="submit">Search</button>
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" required>
+                        </fieldset>
+                    
+                        <fieldset>
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" required autocomplete="current-password">
+                        </fieldset>
+
+                        <fieldset>
+                            <button type="submit">Create Account</button>
                         </fieldset>
                     </form>
-
-                    <div id="results"></div> <!-- Area to display search results -->
                     
                 </div>
             </section>
@@ -137,64 +148,6 @@
                 <p>Copyright &copy; 2024 MediOps - Medical Admin Management System</p>
             </div>
         </footer>
-
-        <script>
-            // Search patients in IndexedDB by first or last name
-        function searchPatients() {
-            let searchValue = document.getElementById('search').value.toLowerCase();
-            let transaction = db.transaction(['patients'], 'readonly');
-            let objectStore = transaction.objectStore('patients');
-            let request = objectStore.getAll();
-
-            request.onsuccess = function(event) {
-                let patients = event.target.result;
-                let results = patients.filter(patient => 
-                    patient.First.toLowerCase().includes(searchValue) || 
-                    patient.Last.toLowerCase().includes(searchValue)
-                );
-
-                displayResults(results);
-            };
-
-            request.onerror = function(event) {
-                console.error('Error fetching patients:', event.target.errorCode);
-            };
-
-            return false; // Prevent form from submitting
-        }
-
-        // Display search results using document.write
-        function displayResults(results) {
-            let resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = ''; // Clear previous results
-
-            if (results.length > 0) {
-                let html = '<h2>Search Results:</h2>';
-                html += '<ul>';
-
-                results.forEach(patient => {
-                    html += `<li>
-                        <strong>ID:</strong> ${patient.id} <br/>
-                        <strong>NHS:</strong> ${patient.NHS} <br/>
-                        <strong>Title:</strong> ${patient.Title} <br/>
-                        <strong>First Name:</strong> ${patient.First} <br/>
-                        <strong>Last Name:</strong> ${patient.Last} <br/>
-                        <strong>DOB:</strong> ${patient.DOB} <br/>
-                        <strong>Gender:</strong> ${patient.Gender} <br/>
-                        <strong>Address:</strong> ${patient.Address} <br/>
-                        <strong>Email:</strong> ${patient.Email} <br/>
-                        <strong>Telephone:</strong> ${patient.Telephone} <br/><br/>
-                    </li>`;
-                });
-
-                html += '</ul>';
-                resultsDiv.innerHTML = html;
-            } else {
-                resultsDiv.innerHTML = '<p>No patients found.</p>';
-            }
-        }
-
-        </script>
         <br/>
     </article>
 </body>

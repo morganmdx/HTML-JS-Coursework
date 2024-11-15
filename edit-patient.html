@@ -11,67 +11,101 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <script src="menu.js" defer></script> <!-- Ensure script is loaded after the page is parsed -->
     <script src="database.js" defer></script> <!-- Load the JS file for managing patients -->
+
+    <script>
+        // Check if the user is logged in
+        if (!localStorage.getItem("isAdminLoggedIn")) {
+            // Redirect to the login page if not logged in
+            window.location.href = "admin-login.html";
+        }
+    </script>
 </head>
 <body>
     <header id="menu">
         <h1> 
             <img alt="MediOps logo" width="20" src="images/logo.svg"> Medi<strong>Ops</strong> 
         </h1>
-        <ul>
-            <li>
-                <a href="admin.html" title="Navigate to Home">
-                    <span class="material-symbols-outlined">layers</span> Dashboard
-                </a>
-            </li>
-            <li>
-                <div class="toggleMenu">
-                    <span class="material-symbols-outlined">group</span>
-                    Patients
-                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
-                </div>
-                <ul class="submenu">
-                    <li><a href="add-new-patient.html" title="Add New Patient">Add New Patient</a></li>
-                    <li><a href="patients.html" title="View List of Patients">All Patients</a></li>
-                    <li><a href="edit-patient.html" title="Edit Patient">Edit Patient</a></li> <!-- Link to the new page -->
-                </ul>
-            </li>
-            <li>
-                <div class="toggleMenu">
-                    <span class="material-symbols-outlined">today</span>
-                    Appointments
-                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
-                </div>
-                <ul class="submenu">
-                    <li><a href="patient-history.html" title="View Patient History">View Patient History</a></li>
-                    <li><a href="medicines.html" title="View Medicines">Medicine Reporting</a></li>
-                </ul>
-            </li>
-            <li>
-                <div class="toggleMenu">
-                    <span class="material-symbols-outlined">stethoscope</span>
-                    Staff
-                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
-                </div>
-                <ul class="submenu">
-                    <li><a href="add-new-doctor.html" title="Add New Doctor">Add New Doctor</a></li>
-                    <li><a href="doctors.html" title="View List of Doctors">All Doctors</a></li>
-                </ul>
-            </li>
 
-            <li>
-                <div class="toggleMenu">
-                    <span class="material-symbols-outlined">support_agent</span>
-                    Admin <i>Coming Soon</i>
-                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
-                </div>
-                <ul class="submenu">
-                    <li> <a href="add-new-patient.html" title="Add New Patient">Add New Patient</a> </li>
-                    <li> <a href="assign-doctor-role.html" title="Assign Doctor User Role">Assign Doctor User Role</a> </li>
-                    <li> <a href="create-login-doctor.html" title="Create Login Details for Doctor">Create Login Details for Doctor</a> </li>
-                    <li> <a href="create-login-patient.html" title="Create Login Details for Patient">Create Login Details for Patient</a> </li> <!-- Link to the new page -->
-                </ul>
-            </li>
-        </ul>
+        <nav>
+            <ul id="nav">
+                <li class="showtoall">
+                    <a href="admin.html" title="Navigate to Home">
+                        <span class="material-symbols-outlined">layers</span> Dashboard
+                    </a>
+                </li>
+                <li class="loggedoutall">
+                    <a href="patient-login.html" title="Navigate to Patient Login">
+                        <span class="material-symbols-outlined">layers</span> Patient Login
+                    </a>
+                </li>
+                <li class="loggedoutall">
+                    <a href="admin-login.html" title="Navigate to Admin Login">
+                        <span class="material-symbols-outlined">layers</span> Admin Login
+                    </a>
+                </li>
+                <li class="loggedoutall">
+                    <a href="doctor-login.html" title="Navigate to Doctor Login">
+                        <span class="material-symbols-outlined">layers</span> Doctor Login
+                    </a>
+                </li>
+                <li class="docandadmins">
+                    <div class="toggleMenu">
+                        <span class="material-symbols-outlined">group</span>
+                        Patients
+                        <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                    </div>
+                    <ul class="submenu">
+                        <li class="adminonly"> <a href="add-new-patient.html" title="Add New Patient">Add New Patient</a> </li>
+                        <li class="docandadmins"> <a href="patients.html" title="View List of Patients">All Patients</a> </li>
+                        <li class="adminonly"> <a href="edit-patient.html" title="Edit Patients">Edit Patients</a> </li>
+                    </ul>
+                </li>
+                <li class="showloggedin">
+                    <div class="toggleMenu">
+                        <span class="material-symbols-outlined">today</span>
+                        Appointments
+                        <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                    </div>
+                    <ul class="submenu">
+                        <li class="docandadmins"> <a href="appointments.html" title="All appointments">All Appointments</a> </li>
+                        <li class="docandadmins"> <a href="make-appointment.html" title="Create appointments">Create an Appointment</a> </li>
+                        <li class="patientonly"> <a href="patient-appointment.html" title="As a patient you can create appointments">Create an Appointment</a> </li>
+                        <li class="patientonly"> <a href="patient-history.html" title="View Patient History">View Patient History</a> </li>
+                        <li class="docandadmins"> <a href="medicines.html" title="View Medicines">Medicine Reporting</a> </li>
+                    </ul>
+                </li>
+                <li class="adminonly">
+                    <div class="toggleMenu">
+                        <span class="material-symbols-outlined">stethoscope</span>
+                        Staff
+                        <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                    </div>
+                    <ul class="submenu">
+                        <li class="adminonly"> <a href="add-new-doctor.html" title="Add New Doctor">Add New Doctor</a> </li>
+                        <li class="adminonly"> <a href="doctors.html" title="View List of Doctors">All Doctors</a> </li>
+                        <li class="adminonly"> <a href="edit-doctor.html" title="Edit Doctor">Edit Doctor</a> </li> <!-- Link to the new page -->
+                    </ul>
+                </li>
+    
+                <li class="adminonly">
+                    <div class="toggleMenu">
+                        <span class="material-symbols-outlined">support_agent</span>
+                        Admin
+                        <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                    </div>
+                    <ul class="submenu">
+                        <li class="adminonly"> <a href="add-new-patient.html" title="Add New Patient">Add New Patient</a> </li>
+                        <li class="adminonly"> <a href="create-login-doctor.html" title="Create Login Details for Doctor">Create Login Details for Doctor</a> </li>
+                        <li class="adminonly"> <a href="create-login-patient.html" title="Create Login Details for Patient">Create Login Details for Patient</a> </li> <!-- Link to the new page -->
+                    </ul>
+                </li>
+    
+                <li class="logout docandadmins showtopatient" onclick="logout()">
+                    <span class="material-symbols-outlined">layers</span> Log out
+                </li>
+    
+            </ul>
+        </nav>
     </header>
 
     <article id="main">
@@ -80,19 +114,24 @@
                 <div class="page-content">
                     <h2>Edit Patient</h2>
                     <form id="editPatientForm" onsubmit="return editPatient();">
-                        <select id="patientSelect" onchange="loadPatientData();" required>
-                            <option value="">Select a patient</option>
-                        </select>
-                        <br/>
-                        <input type="text" id="first_name" placeholder="First Name" required>
-                        <input type="text" id="last_name" placeholder="Last Name" required>
-                        <input type="email" id="email" placeholder="Email" required>
-                        <input type="text" id="gender" placeholder="Gender" required>
-                        <input type="text" id="address" placeholder="Address" required>
-                        <input type="text" id="telephone" placeholder="Telephone" required>
-                        <button class="DeleteButton" type="submit">Update Patient</button>
-                        <button class="DeleteButton" id="deleteButton" onclick="deletePatient()">Delete Patient</button>
-                        <div class="divider"></div>
+                        <fieldset>
+                            <select id="patientSelect" onchange="loadPatientData();" required>
+                                <option value="">Select a patient</option>
+                            </select>
+                        </fieldset>
+                        <fieldset>
+                            <input type="text" id="first_name" placeholder="First Name" required>
+                            <input type="text" id="last_name" placeholder="Last Name" required>
+                            <input type="email" id="email" placeholder="Email" required>
+                            <input type="text" id="gender" placeholder="Gender" required>
+                            <input type="text" id="address" placeholder="Address" required>
+                            <input type="text" id="telephone" placeholder="Telephone" required>
+                        </fieldset>
+                        <fieldset>
+                            <button class="DeleteButton" type="submit">Update Patient</button>
+                            <button class="DeleteButton" id="deleteButton" onclick="deletePatient()">Delete Patient</button>
+                            <div class="divider"></div>
+                        </fieldset>
                     </form>
                 </div>
             </section>

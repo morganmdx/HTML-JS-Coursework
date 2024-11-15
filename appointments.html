@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediOps - Patient List</title>
+    <title>MediOps - Appointments List</title>
     <link href="style.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <script src="menu.js" defer></script> <!-- Ensure script is loaded after the page is parsed -->
-    <script src="database.js"></script>
+    <script src="appointments.js"></script>
 
     <script>
         // Check if the user is logged in
@@ -115,17 +115,20 @@
                 <div class="page-content">
                     <h2>Search for a Patient</h2>
                     <!-- Search form -->
-                    <form id="searchForm" onsubmit="return searchPatients();">
-                        <fieldset>
-                            <label for="search">Search by First or Last Name:</label>
-                            <input type="text" id="search" required>
-                        </fieldset>
-                        <fieldset>
-                            <button type="submit">Search</button>
-                        </fieldset>
-                    </form>
-
-                    <div id="results"></div> <!-- Area to display search results -->
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Appointment ID</th>
+                                <th>Patient Name</th>
+                                <th>Doctor Name</th>
+                                <th>Appointment Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTableBody">
+                            <!-- Appointments will be dynamically loaded here -->
+                        </tbody>
+                    </table>
+                    
                     
                 </div>
             </section>
@@ -142,15 +145,15 @@
             // Search patients in IndexedDB by first or last name
         function searchPatients() {
             let searchValue = document.getElementById('search').value.toLowerCase();
-            let transaction = db.transaction(['patients'], 'readonly');
-            let objectStore = transaction.objectStore('patients');
+            let transaction = db.transaction(['appointments'], 'readonly');
+            let objectStore = transaction.objectStore('appointments');
             let request = objectStore.getAll();
 
             request.onsuccess = function(event) {
                 let patients = event.target.result;
                 let results = patients.filter(patient => 
-                    patient.First.toLowerCase().includes(searchValue) || 
-                    patient.Last.toLowerCase().includes(searchValue)
+                    patient.patient_id.toLowerCase().includes(searchValue) || 
+                    patient.doctor_id.toLowerCase().includes(searchValue)
                 );
 
                 displayResults(results);
@@ -174,7 +177,7 @@
 
                 results.forEach(patient => {
                     html += `<li>
-                        <strong>ID:</strong> ${patient.id} <br/>
+                        <strong>ID:</strong> ${patient.patient_id} <br/>
                         <strong>NHS:</strong> ${patient.NHS} <br/>
                         <strong>Title:</strong> ${patient.Title} <br/>
                         <strong>First Name:</strong> ${patient.First} <br/>

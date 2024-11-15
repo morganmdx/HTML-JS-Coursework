@@ -5,6 +5,94 @@ body {
     color: #484848;
 }
 
+/* Viewport styling for smaller screens */
+@media screen and (max-width: 1290px) {
+    .forty {margin-bottom: 11px; width: calc(100% - 14px) !important; height: auto !important;}
+    .main-section-container {height: auto !important;}
+    .box .box-header {display: block !important;}
+    article section .box .box-header-label, .main-section-container {display: block !important; clear: both;}
+    .main-section-container {min-height: 306px; height: 306px;}
+}
+
+/* Tables */
+table, #medicines-list {
+    width: 100%;
+    text-align: left;
+    border-collapse: separate; 
+    border-spacing: 0.9em; /* remove spacing between table cells */
+    table-layout: fixed; /* Set columns to have equal widths */
+}
+form fieldset {
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    -webkit-align-items: center;
+    border: none;
+    box-shadow: none;
+    outline: none;
+}
+form br {
+    margin-bottom: 5px;
+    display: block;
+    clear: both;
+}
+form input, form select, form textarea {
+    width: calc(40%);
+}
+form textarea {
+    font-family: inherit;
+    font-size: inherit;
+}
+label { 
+    width: 200px;
+}
+form input, form select, label {
+    display: inline-block;
+    max-width: 100%;
+}
+table tr {
+    margin: 7px 0px;
+}
+form label:before {
+    content: "";
+    height: 10px;
+    display: block;
+    clear: both;
+}
+
+form button {
+    background: #7c69d1;
+    color: #ffffff;
+    font-weight: 600;
+    display: block;
+    padding: 11px;
+    border: none;
+    box-shadow: none;
+    margin-top: 19px;
+}
+
+form input, form select, form textarea {
+    background: cornsilk;
+    border: none;
+    border-bottom: 2px solid #7c69d1;
+    padding: 12px;
+    margin-left: 5px;
+}
+
+/* Footer */
+footer {
+    background: #ffffff;
+    margin: 0px 11px 20px 0px;
+    width: calc(100% - 15px);
+    display: block;
+    clear: both;
+}
+
+.footer-container {
+    padding: 12px 20px;
+}
+
+/* Page elements */
 #main {
     display: block;
     position: absolute;
@@ -14,7 +102,94 @@ body {
     width: calc(100% - 278px);
     padding: 9px;
 }
+.medicines-page {
+    height: auto !important;
+}
+#message {
+    border: 4px solid green;
+    font-weight: bold;
+    display: none;
+    padding: 11px 11px;
+    margin: 18px 0px;
+}
+.fullwidth {
+    width: calc(100% - 24px);
+    clear: both;
+    display: block;
+}
+.forty {
+    width: calc(50% - 14px);
+    height: 100%;
+    margin-right: 14px;
+}
+.purple {
+    background: #f5f0ff;
+}
+.green {
+    background: #eef9fc;
+}
+.lime {
+    background: #fcfbee;
+}
+.amber {
+    background: #fceeef;
+}
+.page-content {
+    padding: 19px 24px;
+}
+.page_container {
+    height: auto !important;
+}
+.main-section-container {
+    display: flex;
+    display: -webkit-flex;
+    align-items: flex-start;
+    -webkit-align-items: flex-start;
+    height: 306px;
+    margin-bottom: 11px;
+}
+article section {
+    background: #ffffff;
+    color: #484848;
+    display: inline-block;
+}
+article section h4 {
+    margin-block-start: 0em;
+    margin-block-end: 0.7em;
+}
+article section .box-container {
+    padding: 19px;
+}
+article section .box {
+    width: calc(50% - 28px);
+    position: relative;
+    display: inline-block;
+    border-radius: 12px;
+    padding: 11px;
+    margin: 2px;
+}
+.box-header-label{
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+article section .box .box-header-label {
+    font-size: 26px;
+    font-weight: 500;
+}
+article section .box .sec-icon {
+    background: #ffffff;
+    color: #000000;
+    border-radius: 50%;
+    padding: 8px;
+    margin-right: 7px;
+}
+article section .box .number {
+    font-size: 39px;
+    font-weight: 700;
+    display: block;
+    clear: both;
+}
 
+/* Buttons */
 .DeleteButton {
     float: left;
     margin-right: 8px;
@@ -24,6 +199,18 @@ body {
     clear: both;
 }
 
+/* Headings */
+a, h1, #menu li, footer h3 {
+    color: #7c69d1;
+}
+#main section h2 {
+    margin: 6px;
+}
+h1 img {
+    fill: #7c69d1;
+}
+
+/* Navigation and Menus */
 #menu {
     display: block;
     padding: 12px 20px;
@@ -40,16 +227,23 @@ body {
     margin: 14px 0px;
     font-weight: 500;
 }
+#menu ul li a, .toggleMenu, article section .box .box-header, .logout {
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    -webkit-align-items: center;
+}
+a {
+    text-decoration: none;
+}
 #menu .submenu li {
     margin: 6px 0px;
     font-weight: 400;
 }
-
 .toggleMenu i {
     font-size: 9px;
     margin-left: 4px;
 }
-
 #menu h1 {
     padding: 0px 11px;
 }
@@ -76,130 +270,23 @@ body {
     right: 0px;
     top: 10px;
 }
-
-form label:before {
-    content: "";
-    height: 10px;
-    display: block;
-    clear: both;
-}
-
-form button {
-    background: #7c69d1;
-    color: #ffffff;
-    font-weight: 600;
-    display: block;
-    padding: 11px;
-    border: none;
-    box-shadow: none;
-    margin-top: 19px;
-}
-
-form input, form select {
-    background: cornsilk;
-    border: none;
-    border-bottom: 2px solid #7c69d1;
-    padding: 12px;
-    margin-left: 5px;
-}
-
-a, h1, #menu li, footer h3 {color: #7c69d1;}
-h1 img {fill: #7c69d1;}
-
-#menu li {
-    cursor: pointer;
-}
-/* Initially hide all submenus */
-.submenu {
+.loggedoutall {
     display: none;
 }
-.submenu.show {
-    display: block;
+.showtoall {
+    display: block !important;
 }
-
-#menu ul ul {
-    margin-left: 20px;
-}
-
-.page-content {
-    padding: 19px 24px;
-}
-.page_container {
-    height: auto !important;
-}
-
-.main-section-container {
-    display: flex;
-    display: -webkit-flex;
-    align-items: flex-start;
-    -webkit-align-items: flex-start;
-    height: 306px;
-    margin-bottom: 11px;
-}
-
-#menu ul li a, .toggleMenu, article section .box .box-header {
-    display: flex;
-    display: -webkit-flex;
-    align-items: center;
-    -webkit-align-items: center;
+#menu li {
+    display: none;
+    cursor: pointer;
 }
 #menu ul li a span, #menu h1 img, .toggleMenu span {
     margin-right: 4px;
 }
-header ul {list-style: none; padding-inline-start: 0px;}
-a {text-decoration: none;}
-
-/* Much smaller devices */
-@media screen and (max-width: 1290px) {
-    .forty {margin-bottom: 11px; width: calc(100% - 14px) !important; height: auto !important;}
-    .main-section-container {height: auto !important;}
+header ul {
+    list-style: none;
+    padding-inline-start: 0px;
 }
-
-/* Smaller PC screens and smaller */
-@media screen and (max-width: 1290px) {
-    .box .box-header {display: block !important;}
-    article section .box .box-header-label, .main-section-container {display: block !important; clear: both;}
-    .main-section-container {min-height: 306px; height: 306px;}
-}
-
-article section {
-    background: #ffffff;
-    color: #484848;
-    display: inline-block;
-}
-article section h4 {
-    margin-block-start: 0em;
-    margin-block-end: 0.7em;
-}
-article section .box-container {
-    padding: 19px;
-}
-article section .box {
-    width: calc(50% - 28px);
-    position: relative;
-    display: inline-block;
-    border-radius: 12px;
-    padding: 11px;
-    margin: 2px;
-}
-article section .box .box-header-label {
-    font-size: 26px;
-    font-weight: 500;
-}
-article section .box .sec-icon {
-    background: #ffffff;
-    color: #000000;
-    border-radius: 50%;
-    padding: 8px;
-    margin-right: 7px;
-}
-article section .box .number {
-    font-size: 39px;
-    font-weight: 700;
-    display: block;
-    clear: both;
-}
-
 .pending-label {
     background: orchid;
     padding: 3px;
@@ -211,30 +298,18 @@ article section .box .number {
     font-size: 11px;
 }
 
-.fullwidth {
-    width: calc(100% - 24px);
-    clear: both;
+/* Initially hide all submenus */
+.submenu {
+    display: none;
+}
+.submenu.show {
     display: block;
 }
-
-.forty {
-    width: calc(50% - 14px);
-    height: 100%;
-    margin-right: 14px;
-}
-.purple {
-    background: #f5f0ff;
-}
-.green {
-    background: #eef9fc;
-}
-.lime {
-    background: #fcfbee;
-}
-.amber {
-    background: #fceeef;
+#menu ul ul {
+    margin-left: 20px;
 }
 
+/* Misc */
 .wave {
     animation: wave-animation 2s infinite;
     transform-origin: 70% 70%;
@@ -250,16 +325,4 @@ article section .box .number {
     50% { transform: rotate(10deg); }
     60% { transform: rotate(0deg); }
     100% { transform: rotate(0deg); }
-}
-
-footer {
-    background: #ffffff;
-    margin: 0px 11px 20px 0px;
-    width: calc(100% - 15px);
-    display: block;
-    clear: both;
-}
-
-.footer-container {
-    padding: 12px 20px;
 }

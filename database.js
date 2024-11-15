@@ -2,7 +2,7 @@ let db;
 
 // Open or create an IndexedDB with the name PatientsDB
 function openDB() {
-    let request = indexedDB.open('PatientsDB', 1); 
+    let request = indexedDB.open('patientsDB', 5); 
 
     request.onupgradeneeded = function(event) {
         db = event.target.result;
@@ -30,6 +30,14 @@ function openDB() {
     };
 }
 
+// Hash a password using SHA-256
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
 
 // Function to add a new patient via the form
 function addPatient() {
@@ -131,68 +139,35 @@ function fetchAndStorePatients() {
 }
 
 
-
-// Create function to add a new patient via the form
-function addStudent() {  
-    let name = document.getElementById('name').value;  
-    let age = document.getElementById('age').value;
-    let address = document.getElementById('address').value;
-
-    let transaction = db.transaction(['patients'], 'readwrite');
-    let objectStore = transaction.objectStore('patients');
-
-    // Split name into First and Last (Assuming it's "First Last")
-    let splitName = name.split(' ');
-    let firstName = splitName[0];
-    let lastName = splitName.length > 1 ? splitName[1] : ''; // Handle cases with no last name
-
-    // Create a new patient object with basic details from the form
-    let newPatient = {
-        NHS: '', // Leave blank
-        Title: '', // Leave blank
-        First: firstName,
-        Last: lastName,
-        DOB: '', // Not available in form, leave blank
-        Gender: '', // Leave blank
-        Address: address,
-        Email: '', // Not available, leave blank
-        Telephone: '', // Not available, leave blank
-    };
-
-    // Add the new patient object to the database
-    objectStore.add(newPatient);
-
-    transaction.oncomplete = function() {
-        console.log('New patient added successfully');  // print to console the following success message on completion
-    };
-
-    transaction.onerror = function(event) {
-        console.error('Error adding new patient:', event.target.error);  // print to console the following error msg
-    };
-
-    // Reset form after submission
-    document.getElementById('studentForm').reset();
-    return false; // Prevent default form submission
-}
-
+// Load patient data and use OOP to access values
 function loadPatientData() {
     const patientId = document.getElementById('patientSelect').value;
-    const transaction = db.transaction(["patients"], "readonly");
-    const store = transaction.objectStore("patients");
-    const request = store.get(parseInt(patientId));  // change patient ID into integer
+    const transaction = db.transaction(['patients'], 'readonly');
+    const store = transaction.objectStore('patients');
+    const request = store.get(parseInt(patientId));  // Convert patient ID into integer
+    console.log(`Selected Patient ID: ${patientId}`);
 
     request.onsuccess = function(event) {
         const patient = event.target.result;
         if (patient) {
-            document.getElementById('first_name').value = patient.First;  // Update value of first name element with value of patient first name
-            document.getElementById('last_name').value = patient.Last;    // Update value of surname element with value of patient last name
-            document.getElementById('email').value = patient.Email;       // Update value of email element with value of patient email address
-            document.getElementById('gender').value = patient.Gender;     // Update value of gender form element with value of patient gender
-            document.getElementById('address').value = patient.Address;   // Update value of address element with value of address field
-            document.getElementById('telephone').value = patient.Telephone; // Update value of telephone element with value of patient phone number
+            // Ensure the property names here match the object structure in IndexedDB
+            document.getElementById('first_name').value = patient.First;    // First name
+            document.getElementById('last_name').value = patient.Last;      // Last name
+            document.getElementById('email').value = patient.Email;         // Email address
+            document.getElementById('gender').value = patient.Gender;       // Gender
+            document.getElementById('address').value = patient.Address;     // Address
+            document.getElementById('telephone').value = patient.Telephone; // Telephone
+        } else {
+            alert("Patient not found.");
         }
     };
+
+    // error handling
+    request.onerror = function(event) {
+        console.error("Error loading patient data:", event.target.error);
+    };
 }
+
 
 
 // Function to populate the patient select dropdown
@@ -205,12 +180,16 @@ function populatePatientSelect() {
 
     request.onsuccess = function(event) {
         const patients = event.target.result;
-        patients.forEach(patient => {
-            const option = document.createElement('option');
-            option.value = patient.id; // Use patient id as the value
-            option.textContent = `${patient.First} ${patient.Last}`; // Display full name
-            patientSelect.appendChild(option); // Add option to the select element
-        });
+        // if patient select box exists on current page
+        if (patientSelect) {
+            // for each patient loop through each item and output as an <option> into the <select> box
+            patients.forEach(patient => {
+                const option = document.createElement('option');
+                option.value = patient.id; // Use patient id as the value
+                option.textContent = `${patient.First} ${patient.Last}`; // Display full name using backticks
+                patientSelect.appendChild(option); // Add option to the select element
+            });
+        }
     };
 
     request.onerror = function(event) {
@@ -218,19 +197,22 @@ function populatePatientSelect() {
     };
 }
 
-function createPatientLoginDetails() {
+async function createPatientLoginDetails() {
     // Get the selected patient ID, username, and password from the form
     let patientId = document.getElementById('patientSelect').value; 
     let username = document.getElementById('username').value;
     let password = document.getElementById('password').value;
 
-    // Begin a transaction on both the patients and userLogins object stores
+    // Hash the password for security
+    let hashedPassword = await hashPassword(password);
+
+    // Transaction on the patients and userLogins object stores
     let transaction = db.transaction(['patients', 'userLogins'], 'readwrite');
     let patientStore = transaction.objectStore('patients');
     let loginStore = transaction.objectStore('userLogins');
 
-    // Retrieve the patient based on the selected ID
-    let request = patientStore.get(parseInt(patientId));
+    // Get the patient based on the selected patient's ID
+    let request = patientStore.get(parseInt(patientId));  // convert to integer
 
     request.onsuccess = function(event) {
         let patient = event.target.result; // Get the patient object
@@ -239,24 +221,26 @@ function createPatientLoginDetails() {
             let loginDetails = {
                 id: patient.id,  // Reuse the patient's ID as the key
                 username: username,
-                password: password,
-                NHS: patient.NHS  // Correctly access the NHS_number property
+                password: hashedPassword,
+                NHS: patient.NHS  // The patient's NHS value
             };
 
-            // Attempt to add the login details to the userLogins store
+            // Attempt to add the login details to the userLogins store within DB
             let loginRequest = loginStore.add(loginDetails);
 
             loginRequest.onsuccess = function() {
                 alert("Account details created successfully for patient! The NHS number has been successfully linked to the user account.");
+                // display alert to user to notify success
             };
 
+            // error event handling
             loginRequest.onerror = function(event) {
                 console.error("Error creating user login details: ", event.target.error);
-                alert("Error creating user login details.");
+                alert("Error creating user login details.");  // display alert to user
             };
 
         } else {
-            alert("Selected patient does not exist.");
+            alert("Selected patient does not exist.");  // display alert to user
         }
     };
 
@@ -270,9 +254,9 @@ function createPatientLoginDetails() {
 }
 
 
-
+// Add new function to handle the edit patient form page
 function editPatient() {
-    const patientId = document.getElementById('patientSelect').value;
+    const patientId = document.getElementById('patientSelect').value;  // get value of selected patient and get the ID
     const updatedPatient = {
         id: parseInt(patientId),
         first_name: document.getElementById('first_name').value,
@@ -284,11 +268,11 @@ function editPatient() {
     };
 
     const transaction = db.transaction(["patients"], "readwrite");
-    const store = transaction.objectStore("patients");
+    const store = transaction.objectStore("patients");  // access patients object store
     const request = store.put(updatedPatient);
 
     request.onsuccess = function() {
-        alert("Patient updated successfully!");  // using alert() function to display notification popup with prompt user must dismiss
+        alert("Patient updated successfully!");  // using alert() function to display notification popup
         location.reload(); // Reload the page to see the updated data
     };
 
@@ -303,16 +287,16 @@ function deletePatient() {
 
     // Confirm before deletion
     if (confirm("Are you sure you want to delete this patient?")) {
-        // Start a transaction on the 'patients' object store
+        // Start a transaction on 'patients' object store
         const transaction = db.transaction(['patients'], 'readwrite');
         const objectStore = transaction.objectStore('patients');
 
-        // Delete patient on ID selected in dropdown
+        // Delete patient based on ID selected in dropdown
         const deleteRequest = objectStore.delete(parseInt(patientId)); // Convert patient ID to integer
 
         deleteRequest.onsuccess = function() {
             alert("Patient deleted successfully!");
-            location.reload(); // Reload the page to reflect changes
+            location.reload(); // Reload the page to reflect the patient being deleted to avoid existing data displaying
         };
 
         deleteRequest.onerror = function(event) {
@@ -322,7 +306,79 @@ function deletePatient() {
     }
 }
 
+async function validateLogin() {
+    let username = document.getElementById('username').value.trim(); // Trim to avoid whitespace issues
+    let password = document.getElementById('password').value;  // get value of password field
+
+    const hashedPassword = await hashPassword(password); // Hash the inputted password
+    // console.log("Input password (hashed):", hashedPassword);  // removing this now for security reasons as it was for debugging
+
+    let transaction = db.transaction(['userLogins'], 'readonly');
+    let objectStore = transaction.objectStore('userLogins');  // access userLogins object store
+
+    let request = objectStore.getAll(); // Get all user logins
+    request.onsuccess = function(event) {
+        let users = event.target.result;
+        // console.log("Retrieved users from IndexedDB:", users);
+
+        // Find the matching user
+        let user = users.find(u => u.username === username && u.password === hashedPassword);
+
+        if (user) {
+            alert("Login successful");
+            // Save logged-in status and other details
+            localStorage.setItem('isPatientLoggedIn', 'true');
+            localStorage.setItem('loggedInUsername', username);
+            localStorage.setItem('loggedInUserId', user.id);
+            window.location.href = 'admin.html'; // Redirect after login
+        } else {
+            alert("Invalid login details");
+        }
+    };
+
+    // error handling for failing to get users
+    request.onerror = function(event) {
+        console.error("Error getting users from DB:", event.target.error);
+        alert("Login failed. Please try again.");  // display alert msg to user
+    };
+}
+
+
+// Function to update the username field when a doctor is selected
+function updateUsername() {
+    const doctorId = document.getElementById('patientSelect').value;  // get value of patientSelect <select> dropdown
+    
+    if (doctorId) {
+        const transaction = db.transaction(['patients'], 'readonly');
+        const objectStore = transaction.objectStore('patients');  // access object store called patients
+        const request = objectStore.get(parseInt(doctorId));  // convert doctor ID to integer
+
+        request.onsuccess = function(event) {
+            const doctor = event.target.result;
+            if (doctor) {
+                // Populate the username field with the doctor's email
+                document.getElementById('username').value = doctor.Email;
+
+                // console.log("Selected patient ID:", doctor.Email);  // commenting this out now as no longer need to output this to console log
+            }
+        };
+    }
+}
+
+// DOMCONTENTLOADED: run the following code when the html page has been fully loaded
+// Attach the updateUsername function to the change event of the doctorSelect dropdown
+document.addEventListener('DOMContentLoaded', () => {
+    const doctorSelect = document.getElementById('patientSelect');
+    
+    // If patient <select> box exists then run the following conditional logic
+    if (doctorSelect) {
+        doctorSelect.addEventListener('change', updateUsername);
+    } else {
+        return;  // break out
+    }
+});
+
 // Start the database when the page loads
 window.onload = function() {
-    openDB();  // execute database
+    openDB();  // open and execute database
 };

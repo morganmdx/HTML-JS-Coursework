@@ -1,61 +1,118 @@
-// Existing IndexedDB code
 let db;
 
+// run the following code when the html page has been fully loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Execute or create the database with a version of 1
-    let request = window.indexedDB.open('doctorsDB', 1);
+    let request = window.indexedDB.open('DoctorsDB', 4); // Incremented version to 4 to clear previous
 
+    // error handling for DB failing to open or make a connection
     request.onerror = function(event) {
-        console.error('Database failed to open', event);  // if db failed to open add the following error msg to the console
+        console.error('Database failed to open', event);
     };
 
     request.onsuccess = function(event) {
         db = event.target.result;
-        console.log('Database opened successfully');  // if db opens successfully print the following msg to the console
+        console.log('Database opened successfully');
 
-        // Check if the doctors object store already has entries
+        // Check and populate the database if needed
         let transaction = db.transaction(['doctors'], 'readonly');
         let objectStore = transaction.objectStore('doctors');
         let countRequest = objectStore.count();
-        
+
         countRequest.onsuccess = function() {
             if (countRequest.result === 0) {
-                // Only populate if the database is empty
                 populateDatabase();
             } else {
                 console.log('Database already populated');
             }
         };
 
-        // Load doctors into the select dropdown
+        // Load doctors into the select dropdown once the DB is initialized
         loadDoctors();
     };
 
     request.onupgradeneeded = function(event) {
         db = event.target.result;
 
-        // Create the object store for doctors with auto-incrementing IDs
+        // Create the 'doctors' object store if it doesn't exist
         if (!db.objectStoreNames.contains('doctors')) {
             let objectStore = db.createObjectStore('doctors', { keyPath: 'id', autoIncrement: true });
             objectStore.createIndex('first_name', 'first_name', { unique: false });
             objectStore.createIndex('last_name', 'last_name', { unique: false });
-            console.log('Database setup complete');  // if db is set up then print the following to the console
+            console.log('Doctors object store created');
+        }
+
+        // Create the 'userLogins' object store if it doesn't exist
+        if (!db.objectStoreNames.contains('userLogins')) {
+            let loginStore = db.createObjectStore('userLogins', { keyPath: 'id' });
+            console.log('User logins object store created');
         }
     };
 });
 
-// Function to fetch and populate data to the database
-function populateDatabase() {  // first of all fetch the following external db JSON url
+// Function to hash passwords for security reasons
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hashBuffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+// Function to load doctors
+function loadDoctors() {
+    if (!db) {
+        console.error("Database is not initialized.");
+        return;
+    }
+
+    let transaction = db.transaction(['doctors'], 'readonly');
+    let objectStore = transaction.objectStore('doctors');
+    let request = objectStore.getAll();  // get all items
+    const checkDropdown = document.getElementById('doctorSelect');  // variable to check if doctorSelect <select> box exists on page
+
+    if (checkDropdown) {  // check if select box is within page's markup
+        request.onsuccess = function(event) {
+            const doctors = event.target.result;
+            const doctorSelect = document.getElementById('doctorSelect');
+    
+            // if doctor select box exists on page
+            if (doctorSelect) {
+                doctorSelect.innerHTML = ''; // Clear existing options
+            }
+    
+            // if 1 or more doctors in array then loop through each doctor and append as an <option> element to the <select> box
+            if (doctors.length > 0) {
+                doctors.forEach(doctor => {
+                    const option = document.createElement('option');
+                    option.value = doctor.id;
+                    option.textContent = `${doctor.first_name} ${doctor.last_name}`;
+                    doctorSelect.appendChild(option);
+                });
+            } else {
+                console.log('No doctors found in IndexedDB.');  // error to display in console log for debugging
+            }
+        };
+    }
+
+    // error handling if the above fails
+    request.onerror = function(event) {
+        console.error('Error getting doctors:', event.target.error);
+    };
+}
+
+// Function to get and populate data to the database from the provided doctors JSON file
+function populateDatabase() {
     fetch('https://jsethi-mdx.github.io/cst2572.github.io/doctors.json')
         .then(response => response.json())
         .then(data => {
             let transaction = db.transaction(['doctors'], 'readwrite');
-            let objectStore = transaction.objectStore('doctors');
+            let objectStore = transaction.objectStore('doctors');  // object store called doctors
             
+            // for each item add doctor to db object store called doctors
             data.forEach(doctor => {
-                objectStore.add(doctor);  // for each doctor in the JSON array
+                objectStore.add(doctor);
             });
 
+            // mainly for debugging - if this were a live project
             transaction.oncomplete = function() {
                 console.log('Doctors successfully added to the database');
             };
@@ -64,13 +121,11 @@ function populateDatabase() {  // first of all fetch the following external db J
                 console.error('Transaction failed', event);
             };
         })
-        .catch(error => console.error('Error fetching doctors:', error));  // if data is not available then add the following msg to the console
+        .catch(error => console.error('Error fetching doctors:', error));
 }
 
 // Function to allow user to search doctors based on their first/last name
 function searchDoctors() {
-
-    //create variables
     let searchValue = document.getElementById('search').value.toLowerCase();
     let transaction = db.transaction(['doctors'], 'readonly');
     let objectStore = transaction.objectStore('doctors');
@@ -81,7 +136,7 @@ function searchDoctors() {
         let results = doctors.filter(doctor => 
             doctor.first_name.toLowerCase().includes(searchValue) ||  
             doctor.last_name.toLowerCase().includes(searchValue)
-        );  // convert doctor names to lowercase using toLowerCase() function to avoid case sensitive search
+        );
 
         displayResults(results);
     };
@@ -96,13 +151,13 @@ function searchDoctors() {
 // Function to display search results
 function displayResults(results) {
     let resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = ''; // Clear previous results output by targeting innerHTML
+    resultsDiv.innerHTML = '';
 
-    if (results.length > 0) {  // if more than 0 results then run the following
-        let html = '<h2>Search Results:</h2>';
-        html += '<ul>';
+    // if more than 1 result exists then loop through each and display using OOP to access values
+    if (results.length > 0) {
+        let html = '<h2>Search Results:</h2>';  // output h2 heading
+        html += '<ul>';  // display as unordered list
 
-        // format the search results for each doctor
         results.forEach(doctor => {
             html += `<li>
                 <strong>ID:</strong> ${doctor.id} <br/>
@@ -115,9 +170,10 @@ function displayResults(results) {
             </li>`;
         });
 
-        html += '</ul>';  // end of unordered list
-        resultsDiv.innerHTML = html;
-    } else {  // if search results is not more than 1 then print the following message saying none found
+        html += '</ul>'; // closing unordered list tag
+        resultsDiv.innerHTML = html;  // output to resultsDiv element on page defined above by using 'innerHTML' to output as the content of the element
+    } else {  
+        // if no doctors exist then output the following
         resultsDiv.innerHTML = '<p>No doctors found.</p>';
     }
 }
@@ -129,8 +185,9 @@ function addDoctor() {
         return;
     }
 
+    // map variables in our db to the values of the form fields hence using getElementById and the .value target
     const doctorData = {
-        first_name: document.getElementById('first_name').value,  // value of HTML element with the ID of first_name and store it as a new variable called first_name
+        first_name: document.getElementById('first_name').value,
         last_name: document.getElementById('last_name').value,
         email: document.getElementById('email').value,
         gender: document.getElementById('gender').value,
@@ -138,61 +195,24 @@ function addDoctor() {
         Telephone: document.getElementById('telephone').value
     };
 
-    // Add the new doctor data to the IndexedDB
     const transaction = db.transaction(['doctors'], 'readwrite');
-    const objectStore = transaction.objectStore('doctors');
+    const objectStore = transaction.objectStore('doctors');  // object store called doctors
     const request = objectStore.add(doctorData);
 
     request.onsuccess = function() {
-        console.log("New Doctor Data added to DB:", doctorData);  // print doctor info to console log
-        alert("Doctor added successfully!");  // if doctor has been added then show the following dialog to user
+        console.log("New Doctor Data added to DB:", doctorData);
+        alert("Doctor added successfully!");
     };
 
+    // error handling with visual alert msg
     request.onerror = function(event) {
         console.error("Error adding doctor:", event.target.error);
         alert("Failed to add doctor. Please check the console for details.");
-    }; 
+    };
 
-    // Reset the form after submission
+    // reset add doctor form on form submisssion
     document.getElementById('doctorForm').reset();
-    return false; // Prevent the form from submitting the traditional way
-}
-
-// Load doctors into the select dropdown
-function loadDoctors() {
-    // Check if db is stated
-    if (!db) {
-        console.error("Database is not initialized.");
-        return;
-    }
-
-    let transaction = db.transaction(['doctors'], 'readonly');
-    let objectStore = transaction.objectStore('doctors');
-    let request = objectStore.getAll();
-
-    request.onsuccess = function(event) {
-        const doctors = event.target.result;
-        const doctorSelect = document.getElementById('doctorSelect');
-
-        // Clear existing options
-        doctorSelect.innerHTML = '';
-
-        if (doctors.length > 0) {  // if there is at least one doctor in the array then run following code
-            // For each doctor in the array create option in the <select> dropdown with dr first name & last name
-            doctors.forEach(doctor => {
-                const option = document.createElement('option');
-                option.value = doctor.id;
-                option.textContent = `${doctor.first_name} ${doctor.last_name}`;
-                doctorSelect.appendChild(option);
-            });
-        } else {  // if no drs found then print the following to the console log
-            console.log("No doctors found in IndexedDB.");
-        }
-    };
-
-    request.onerror = function(event) {
-        console.error("Error getting any doctors:", event.target.error);
-    };
+    return false; // Prevent the form from submitting the normal page-refresh way
 }
 
 // Load the selected doctor's data into the form
@@ -201,7 +221,7 @@ function loadDoctorData() {
     if (doctorId) {
         const transaction = db.transaction(['doctors'], 'readonly');
         const objectStore = transaction.objectStore('doctors');
-        const request = objectStore.get(parseInt(doctorId)); // convert DR id to integer
+        const request = objectStore.get(parseInt(doctorId));
 
         request.onsuccess = function(event) {
             const doctor = event.target.result;
@@ -209,7 +229,7 @@ function loadDoctorData() {
                 document.getElementById('first_name').value = doctor.first_name;
                 document.getElementById('last_name').value = doctor.last_name;
                 document.getElementById('email').value = doctor.email;
-                document.getElementById('gender').value = doctor.gender;
+                document.getElementById('gender').value = doctor.gender;  // populate selected doctor's gender into the gender input field
                 document.getElementById('address').value = doctor.Address;
                 document.getElementById('telephone').value = doctor.Telephone;
             }
@@ -219,8 +239,9 @@ function loadDoctorData() {
 
 // Function to allow user to edit doctor
 function editDoctor() {
-    const doctorId = document.getElementById('doctorSelect').value;
+    const doctorId = document.getElementById('doctorSelect').value;  // get value of doctor ID based on selected doctor in the <select> box with the ID doctorSelect
 
+    // map the values of the form fields to the db fields
     const updatedData = {
         first_name: document.getElementById('first_name').value,
         last_name: document.getElementById('last_name').value,
@@ -230,15 +251,15 @@ function editDoctor() {
         Telephone: document.getElementById('telephone').value
     };
 
-    // Update the doctor data in IndexedDB
     const transaction = db.transaction(['doctors'], 'readwrite');
-    const objectStore = transaction.objectStore('doctors');
-    const request = objectStore.put({ id: parseInt(doctorId), ...updatedData });
+    const objectStore = transaction.objectStore('doctors');  // object store called doctors
+    const request = objectStore.put({ id: parseInt(doctorId), ...updatedData });  // convert doctor ID to integer and update data
 
     request.onsuccess = function() {
-        alert("Doctor updated successfully!");
+        alert("Doctor updated successfully!");  // display visual alert popup using alert() function
     };
 
+    // error handling for failing to update doctor from the form's submission
     request.onerror = function(event) {
         console.error("Error updating doctor:", event.target.error);
         alert("Failed to update doctor. Please check the console for details.");
@@ -247,23 +268,21 @@ function editDoctor() {
     return false; // Prevent the form from submitting the default way
 }
 
-
-// Delete doctor from DB
-function deletePatient() {
+// Function to handle deleting a doctor from DB
+function deleteDoctor() {
     const doctorId = document.getElementById('doctorSelect').value;
 
-    // Confirm before deletion
+    // ask user using confirm function prompt
     if (confirm("Are you sure you want to delete this doctor?")) {
-        // Start a transaction on the 'patients' object store
         const transaction = db.transaction(['doctors'], 'readwrite');
         const objectStore = transaction.objectStore('doctors');
 
-        // Delete patient on ID selected in dropdown
-        const deleteRequest = objectStore.delete(parseInt(doctorId)); // Convert patient ID to integer
+        // look up object store for selected doctor's id and delete that doctor from db
+        const deleteRequest = objectStore.delete(parseInt(doctorId));
 
         deleteRequest.onsuccess = function() {
-            alert("Doctor deleted successfully!");
-            location.reload(); // Reload the page to reflect changes
+            alert("Doctor deleted successfully!");  // display msg to user using alert() function
+            location.reload();
         };
 
         deleteRequest.onerror = function(event) {
@@ -273,7 +292,128 @@ function deletePatient() {
     }
 }
 
+// Function to update the username field
+function updateUsername() {
+    let username = document.getElementById('username').value;
+    let password = document.getElementById('password').value;  // get value of password field and store as variable
+    if (username !== "" && password !== "") {
+        storeLoginDetails(username, password);
+    }
+}
+
+// Function to store login details
+async function storeLoginDetails(username, password) {
+    let transaction = db.transaction(['userLogins'], 'readwrite');
+    let objectStore = transaction.objectStore('userLogins');
+    let request = objectStore.add({ username, password });
+
+    const hashedPassword = await hashPassword(password);  // hash password for security reasons and store as variable
+
+    request.onsuccess = function(event) {
+        console.log("User login details saved successfully.");
+    };
+
+    // error handling
+    request.onerror = function(event) {
+        console.error("Error saving login details", event.target.error);
+    };
+}
+
+// Function to validate login
+async function validateLogin() {
+    // create our variables for the value of form elements for login fields
+    let username = document.getElementById('username').value;
+    let password = document.getElementById('password').value;
+
+    // hash password for security reasons and store as new variable
+    const hashedPassword = await hashPassword(password);
+
+    let transaction = db.transaction(['userLogins'], 'readonly');
+    let objectStore = transaction.objectStore('userLogins');  // get object store userLogins
+    let request = objectStore.getAll();  // get all from DB
+
+    request.onsuccess = function(event) {
+        let users = event.target.result;
+        let user = users.find(u => u.username === username && u.password === hashedPassword);
+
+        // if finds user matching username and the hashed password then run following code
+        if (user) {
+            alert("Login successful");  // display prompt to user using alert() function
+            // Save logged-in status, username, and user ID to localStorage
+            localStorage.setItem('isDoctorLoggedIn', 'true');
+            localStorage.setItem('loggedInDoctorUsername', username);
+            localStorage.setItem('loggedInDoctorID', user.id);  // Store the user ID
+            window.location.href = "admin.html"; // Redirect to doctor management page
+        } else {
+            alert("Invalid username or password.");  // incorrect login details entered
+        }
+    };
+
+    request.onerror = function(event) {
+        console.error("Error validating login", event.target.error);
+    };
+
+    return false;
+}
 
 
-// Load doctors when the page is loaded
-document.addEventListener('DOMContentLoaded', loadDoctors);
+// Function to update the username field when a doctor is selected
+function updateUsername() {
+    const doctorId = document.getElementById('doctorSelect').value; // get value of doctorSelect <select> box for selected doctor
+    if (doctorId) {  // if doctor ID is selected or the value is populated or not empty
+        const transaction = db.transaction(['doctors'], 'readonly');
+        const objectStore = transaction.objectStore('doctors');
+        const request = objectStore.get(parseInt(doctorId));  // convert doctor ID to integer and get doctor from object store based on their ID
+
+        request.onsuccess = function(event) {
+            const doctor = event.target.result;
+            if (doctor) {
+                // Populate the username field with the doctor's email
+                document.getElementById('username').value = doctor.email;
+            }
+        };
+    }
+}
+
+// Changes to the doctorSelect dropdown based on user's doctor selection - load the following when HTML content is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    const doctorSelect = document.getElementById('doctorSelect');
+    if (doctorSelect) {  // if doctor select box appears on page
+        doctorSelect.addEventListener('change', updateUsername);
+    } else {
+        return;
+    }
+});
+
+
+
+// Create doctor login details
+async function createDoctorLoginDetails() {
+    let doctorId = document.getElementById('doctorSelect').value; 
+    let password = document.getElementById('password').value;
+    const hashedPassword = await hashPassword(password);
+
+    let transaction = db.transaction(['doctors', 'userLogins'], 'readwrite');
+    let doctorStore = transaction.objectStore('doctors');
+    let loginStore = transaction.objectStore('userLogins');
+
+    let doctorRequest = doctorStore.get(parseInt(doctorId));  // convert doctor ID to integer and get from object store based on their ID
+
+    doctorRequest.onsuccess = function(event) {
+        let doctor = event.target.result;
+        // conditional logic that then maps fields in the DB to our variables above based on input into front-end form
+        if (doctor) {
+            let loginData = {
+                id: doctorId,
+                username: doctor.email,
+                password: hashedPassword  // value of hashed password
+            };
+
+            let loginRequest = loginStore.add(loginData);  // add to DB
+
+            loginRequest.onsuccess = function() {
+                alert("Doctor login details created successfully!");
+            };  // successful
+        }
+    };
+}

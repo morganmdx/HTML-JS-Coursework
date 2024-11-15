@@ -10,6 +10,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <script src="menu.js" defer></script> <!-- Ensure script is loaded after the page is parsed -->
+    <script src="medicines.js" defer></script> <!-- Load the JS file for managing patients -->
+
+    <script>
+        // Check if the user is logged in
+        if (!localStorage.getItem("isDoctorLoggedIn") && !localStorage.getItem("isAdminLoggedIn")) {
+            // Redirect to the login page if not logged in
+            window.location.href = "doctor-login.html";
+        }
+    </script>
 </head>
 <body>
     <header id="menu">
@@ -17,119 +26,107 @@
             <img alt="MediOps logo" width="20" src="images/logo.svg"> Medi<strong>Ops</strong> 
         </h1>
 
-        <ul>
-            <li>
-                <a href="admin.html" title="Navigate to Home">
-                    <span class="material-symbols-outlined">layers</span> Dashboard
-                </a>
-            </li>
-            <li>
-                <div class="toggleMenu">
-                    <span class="material-symbols-outlined">group</span>
-                    Patients
-                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
-                </div>
-                <ul class="submenu">
-                    <li> <a href="add-new-patient.html" title="Add New Patient">Add New Patient</a> </li>
-                    <li> <a href="patients.html" title="View List of Patients">All Patients</a> </li>
-                    <li> <a href="edit-patient.html" title="View List of Patients">Edit Patients</a> </li>
-                </ul>
-            </li>
-            <li>
-                <div class="toggleMenu">
-                    <span class="material-symbols-outlined">today</span>
-                    Appointments
-                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
-                </div>
-                <ul class="submenu">
-                    <li> <a href="patient-history.html" title="View Patient History">View Patient History</a> </li>
-                    <li> <a href="medicines.html" title="View Medicines">Medicine Reporting</a> </li>
-                </ul>
-            </li>
-            <li>
-                <div class="toggleMenu">
-                    <span class="material-symbols-outlined">stethoscope</span>
-                    Staff
-                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
-                </div>
-                <ul class="submenu">
-                    <li> <a href="add-new-doctor.html" title="Add New Doctor">Add New Doctor</a> </li>
-                    <li> <a href="doctors.html" title="View List of Doctors">All Doctors</a> </li>
-                    <li> <a href="edit-doctor.html" title="Edit Doctor">Edit Doctor</a> </li> <!-- Link to the new page -->
-                </ul>
-            </li>
-
-            <li>
-                <div class="toggleMenu">
-                    <span class="material-symbols-outlined">support_agent</span>
-                    Admin <i>Coming Soon</i>
-                    <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
-                </div>
-                <ul class="submenu">
-                    <li> <a href="add-new-patient.html" title="Add New Patient">Add New Patient</a> </li>
-                    <li> <a href="assign-doctor-role.html" title="Assign Doctor User Role">Assign Doctor User Role</a> </li>
-                    <li> <a href="create-login-doctor.html" title="Create Login Details for Doctor">Create Login Details for Doctor</a> </li>
-                    <li> <a href="create-login-patient.html" title="Create Login Details for Patient">Create Login Details for Patient</a> </li> <!-- Link to the new page -->
-                </ul>
-            </li>
-        </ul>
+        <nav>
+            <ul id="nav">
+                <li class="showtoall">
+                    <a href="admin.html" title="Navigate to Home">
+                        <span class="material-symbols-outlined">layers</span> Dashboard
+                    </a>
+                </li>
+                <li class="loggedoutall">
+                    <a href="patient-login.html" title="Navigate to Patient Login">
+                        <span class="material-symbols-outlined">layers</span> Patient Login
+                    </a>
+                </li>
+                <li class="loggedoutall">
+                    <a href="admin-login.html" title="Navigate to Admin Login">
+                        <span class="material-symbols-outlined">layers</span> Admin Login
+                    </a>
+                </li>
+                <li class="loggedoutall">
+                    <a href="doctor-login.html" title="Navigate to Doctor Login">
+                        <span class="material-symbols-outlined">layers</span> Doctor Login
+                    </a>
+                </li>
+                <li class="docandadmins">
+                    <div class="toggleMenu">
+                        <span class="material-symbols-outlined">group</span>
+                        Patients
+                        <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                    </div>
+                    <ul class="submenu">
+                        <li class="adminonly"> <a href="add-new-patient.html" title="Add New Patient">Add New Patient</a> </li>
+                        <li class="docandadmins"> <a href="patients.html" title="View List of Patients">All Patients</a> </li>
+                        <li class="adminonly"> <a href="edit-patient.html" title="Edit Patients">Edit Patients</a> </li>
+                    </ul>
+                </li>
+                <li class="showloggedin">
+                    <div class="toggleMenu">
+                        <span class="material-symbols-outlined">today</span>
+                        Appointments
+                        <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                    </div>
+                    <ul class="submenu">
+                        <li class="docandadmins"> <a href="appointments.html" title="All appointments">All Appointments</a> </li>
+                        <li class="docandadmins"> <a href="make-appointment.html" title="Create appointments">Create an Appointment</a> </li>
+                        <li class="patientonly"> <a href="patient-appointment.html" title="As a patient you can create appointments">Create an Appointment</a> </li>
+                        <li class="patientonly"> <a href="patient-history.html" title="View Patient History">View Patient History</a> </li>
+                        <li class="docandadmins"> <a href="medicines.html" title="View Medicines">Medicine Reporting</a> </li>
+                    </ul>
+                </li>
+                <li class="adminonly">
+                    <div class="toggleMenu">
+                        <span class="material-symbols-outlined">stethoscope</span>
+                        Staff
+                        <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                    </div>
+                    <ul class="submenu">
+                        <li class="adminonly"> <a href="add-new-doctor.html" title="Add New Doctor">Add New Doctor</a> </li>
+                        <li class="adminonly"> <a href="doctors.html" title="View List of Doctors">All Doctors</a> </li>
+                        <li class="adminonly"> <a href="edit-doctor.html" title="Edit Doctor">Edit Doctor</a> </li> <!-- Link to the new page -->
+                    </ul>
+                </li>
+    
+                <li class="adminonly">
+                    <div class="toggleMenu">
+                        <span class="material-symbols-outlined">support_agent</span>
+                        Admin
+                        <span class="material-symbols-outlined expand-menu-icon">keyboard_arrow_down</span>
+                    </div>
+                    <ul class="submenu">
+                        <li class="adminonly"> <a href="add-new-patient.html" title="Add New Patient">Add New Patient</a> </li>
+                        <li class="adminonly"> <a href="create-login-doctor.html" title="Create Login Details for Doctor">Create Login Details for Doctor</a> </li>
+                        <li class="adminonly"> <a href="create-login-patient.html" title="Create Login Details for Patient">Create Login Details for Patient</a> </li> <!-- Link to the new page -->
+                    </ul>
+                </li>
+    
+                <li class="logout docandadmins showtopatient" onclick="logout()">
+                    <span class="material-symbols-outlined">layers</span> Log out
+                </li>
+    
+            </ul>
+        </nav>
     </header>
 
     <article id="main">
-        <div class="main-section-container">
-            
-            <section class="section forty">
-                <div class="box-container">
-                    <h4>Overview</h4>
-                    <div class="box purple">
-                        <div class="box-header">
-                            <span class="material-symbols-outlined sec-icon">personal_injury</span>
-                            <span class="box-header-label">Patients</span>
-                        </div>
-                        <span class="number">180</span>
-                    </div>
-
-                    <div class="box green">
-                        <div class="box-header">
-                            <span class="material-symbols-outlined sec-icon">stethoscope_check</span>
-                            <span class="box-header-label">Doctors</span>
-                        </div>
-                        <span class="number">11</span>
-                    </div>
-
-                    <div class="box lime">
-                        <div class="box-header">
-                            <span class="material-symbols-outlined sec-icon">pill</span>
-                            <span class="box-header-label">Treatments</span>
-                        </div>
-                        <span class="number">04</span>
-                    </div>
-
-                    <div class="box amber">
-                        <div class="box-header">
-                            <span class="material-symbols-outlined sec-icon">clinical_notes</span>
-                            <span class="box-header-label">Consultations</span>
-                        </div>
-                        <span class="pending-label">Pending</span>
-                        <span class="number">04</span>
-                    </div>
+        <div class="main-section-container page_container">
+            <section class="section fullwidth">
+                <div class="page-content">
+                    <h2>List of Available Medicines</h2>
+                    <table id="medicines-list">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Drug</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Medicines will be dynamically added here -->
+                        </tbody>
+                    </table>
+                
                 </div>
             </section>
-
-            <section class="section forty">
-                <div class="box-container">
-                    <h4>List of Medicines</h4>
-                    <div>
-                        <p>
-                            https://jsethi-mdx.github.io/cst2572.github.io/medicines.json
-                        </p>
-                        <p>
-                            Page will show list of medicines from the JSON.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
         </div>
         <footer>
             <div class="footer-container">
