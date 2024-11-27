@@ -501,41 +501,52 @@ function handleCreateAppointmentForm(event) {
     const doctorSelect = document.getElementById('doctorSelect');
     const appointmentDate = document.getElementById('appointmentDate');
 
-    appointmentPatientNote = document.getElementById('patientNote').value;
+    if (appointmentPatientNote = document.getElementById('patientNote')) {
+        appointmentPatientNote = document.getElementById('patientNote').value;
+    }
 
-
-    if (patientSelect && doctorSelect && appointmentDate && appointmentPatientNote) {
+    if (patientSelect && doctorSelect && appointmentDate) {
         const patientId = parseInt(patientSelect.value);
         const doctorId = parseInt(doctorSelect.value);
         const date = appointmentDate.value;
-        const appointmentPatientNote = appointmentPatientNote.value;
         appointmentPatientNote = document.getElementById('patientNote').value;
 
 
         // Validate inputs
-        if (isNaN(patientId) || isNaN(doctorId) || !date || !appointmentPatientNote) {
+        if (isNaN(patientId) || isNaN(doctorId) || !date) {
             console.error('Invalid input: Please select a valid patient, doctor, and date.');
             return;
         }
 
         // Add the appointment
-        addAppointment(patientId, doctorId, date, appointmentPatientNote);
+        if (appointmentPatientNote) {
+            addAppointment(patientId, doctorId, date, appointmentPatientNote);
+        }
+        else {
+            addAppointment(patientId, doctorId, date);
+        }
     }
 
-    else if (patientSelectalt && doctorSelect && appointmentDate && appointmentPatientNote) {
+    else if (patientSelectalt && doctorSelect && appointmentDate) {
         const patientId = parseInt(patientSelectalt.value);
         const doctorId = parseInt(doctorSelect.value);
         const date = appointmentDate.value;
         appointmentPatientNote = document.getElementById('patientNote').value;
 
         // Validate inputs
-        if (isNaN(patientId) || isNaN(doctorId) || !date || !appointmentPatientNote) {
+        if (isNaN(patientId) || isNaN(doctorId) || !date) {
             console.error('Invalid input: Please select a valid patient, doctor, and date.');
             return;
         }
 
         // Add the appointment
-        addAppointment(patientId, doctorId, date, appointmentPatientNote);
+        // Add the appointment
+        if (appointmentPatientNote) {
+            addAppointment(patientId, doctorId, date, appointmentPatientNote);
+        }
+        else {
+            addAppointment(patientId, doctorId, date);
+        }
     }
     
     else {
