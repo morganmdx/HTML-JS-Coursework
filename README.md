@@ -4,6 +4,9 @@ A **Medical Admin Management System** web application built using HTML, CSS and 
 
 This web application features a slick user interface that is mobile-friendly across mobile, tablet and PC, with native in-browser IndexedDB support for database records management. 
 
+## Demo
+Demo of what the system looks like without log-ins generated: (https://morganmdx.github.io/HTML-JS-Coursework/admin.html)
+
 ## Tech Stack
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
